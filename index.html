@@ -52,7 +52,6 @@
       overflow: hidden;
     }
 
-    /* Header */
     header {
       background: #0b1324;
       padding: 6px 10px;
@@ -102,10 +101,10 @@
       background: #94a3b8;
     }
     .status-dot.synced { background: #22c55e; }
-    .status-dot.syncing { background: #eab308; animation: blink 0.9s infinite; }
+    .status-dot.syncing { background: #eab308; animation: blink 0.5s infinite; }
     .status-dot.error { background: #ef4444; }
 
-    @keyframes blink { 50% { opacity: 0.3; } }
+    @keyframes blink { 50% { opacity: 0.2; } }
 
     .btn-icon {
       background: #111c33;
@@ -126,7 +125,6 @@
       background: #1e293b;
     }
 
-    /* 2x2 Matrix Grid */
     .matrix-grid {
       flex: 1;
       display: grid;
@@ -207,7 +205,6 @@
       align-items: center;
     }
 
-    /* Inline Add Bar */
     .inline-add-bar {
       display: none;
       padding: 4px;
@@ -218,9 +215,7 @@
       align-items: center;
     }
 
-    .inline-add-bar.active {
-      display: flex;
-    }
+    .inline-add-bar.active { display: flex; }
 
     .inline-add-bar input {
       flex: 1;
@@ -246,7 +241,6 @@
       flex-shrink: 0;
     }
 
-    /* Tasks List */
     .task-list {
       flex: 1;
       overflow-y: auto;
@@ -265,7 +259,7 @@
       display: flex;
       flex-direction: column;
       gap: 3px;
-      transition: all 0.2s ease;
+      transition: opacity 0.15s ease, transform 0.15s ease;
       position: relative;
     }
 
@@ -324,7 +318,6 @@
       color: #fff;
     }
 
-    /* Modals */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -450,7 +443,6 @@
 </head>
 <body>
 
-  <!-- App Header -->
   <header id="mainHeader">
     <div class="brand">
       <i class="fa-solid fa-shapes"></i>
@@ -470,9 +462,7 @@
     </div>
   </header>
 
-  <!-- 2x2 Grid Quad Matrix -->
   <main class="matrix-grid">
-    <!-- P1 -->
     <div class="quadrant p1" data-quad="p1">
       <div class="quad-header">
         <div class="quad-title">
@@ -491,7 +481,6 @@
       <div class="task-list" id="list-p1"></div>
     </div>
 
-    <!-- P2 -->
     <div class="quadrant p2" data-quad="p2">
       <div class="quad-header">
         <div class="quad-title">
@@ -510,7 +499,6 @@
       <div class="task-list" id="list-p2"></div>
     </div>
 
-    <!-- P3 -->
     <div class="quadrant p3" data-quad="p3">
       <div class="quad-header">
         <div class="quad-title">
@@ -529,7 +517,6 @@
       <div class="task-list" id="list-p3"></div>
     </div>
 
-    <!-- P4 -->
     <div class="quadrant p4" data-quad="p4">
       <div class="quad-header">
         <div class="quad-title">
@@ -549,7 +536,6 @@
     </div>
   </main>
 
-  <!-- GitHub Vault Modal -->
   <div class="modal-overlay" id="settingsModal">
     <div class="modal-box">
       <div class="modal-title">
@@ -579,7 +565,6 @@
     </div>
   </div>
 
-  <!-- Backup & Restore Modal -->
   <div class="modal-overlay" id="backupModal">
     <div class="modal-box">
       <div class="modal-title">
@@ -599,7 +584,6 @@
     </div>
   </div>
 
-  <!-- Task Detail & Reminder Modal -->
   <div class="modal-overlay" id="reminderModal">
     <div class="modal-box">
       <div class="modal-title">
@@ -630,7 +614,6 @@
     </div>
   </div>
 
-  <!-- History Drawer Modal -->
   <div class="modal-overlay" id="historyModal">
     <div class="modal-box">
       <div class="modal-title">
@@ -654,14 +637,14 @@
       tasks: [],
       history: [],
       sha: null,
-      activeTaskId: null
+      activeTaskId: null,
+      isPushing: false
     };
 
     if (new URLSearchParams(window.location.search).get('view') === 'widget') {
       document.body.classList.add('widget-mode');
     }
 
-    // Dynamic Manifest
     const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#070d19"/><rect x="40" y="40" width="200" height="200" rx="20" fill="#fef08a"/><rect x="272" y="40" width="200" height="200" rx="20" fill="#fecdd3"/><rect x="40" y="272" width="200" height="200" rx="20" fill="#cffafe"/><rect x="272" y="272" width="200" height="200" rx="20" fill="#bbf7d0"/></svg>`;
     const iconUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(iconSvg);
 
@@ -685,14 +668,12 @@
     manifestLink.href = URL.createObjectURL(manifestBlob);
     document.head.appendChild(manifestLink);
 
-    // Register Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').catch(e => console.log('SW note:', e));
       });
     }
 
-    // Install prompt handler
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -711,7 +692,6 @@
       }
     };
 
-    // Audio Chime
     function playChime() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -821,7 +801,7 @@
 
       input.value = "";
       saveLocal();
-      triggerDebouncedSync();
+      fastInstantSync();
     }
 
     function completeTask(id) {
@@ -839,9 +819,9 @@
           task.completedAt = new Date().toLocaleString();
           state.history.unshift(task);
           saveLocal();
-          triggerDebouncedSync();
+          fastInstantSync();
         }
-      }, 240);
+      }, 140);
     }
 
     function openModal(id) { document.getElementById(id).classList.add('active'); }
@@ -864,7 +844,7 @@
         task.quadrant = document.getElementById('editTaskQuadrant').value;
         task.reminder = document.getElementById('editTaskReminder').value || null;
         saveLocal();
-        triggerDebouncedSync();
+        fastInstantSync();
       }
       closeModal('reminderModal');
     }
@@ -872,7 +852,7 @@
     function deleteCurrentTask() {
       state.tasks = state.tasks.filter(t => t.id !== state.activeTaskId);
       saveLocal();
-      triggerDebouncedSync();
+      fastInstantSync();
       closeModal('reminderModal');
     }
 
@@ -905,7 +885,7 @@
         item.completed = false;
         state.tasks.push(item);
         saveLocal();
-        triggerDebouncedSync();
+        fastInstantSync();
         document.getElementById('btnHistory').click();
       }
     }
@@ -914,7 +894,7 @@
       if (confirm("Clear all completed task history?")) {
         state.history = [];
         saveLocal();
-        triggerDebouncedSync();
+        fastInstantSync();
         closeModal('historyModal');
       }
     }
@@ -949,7 +929,7 @@
             state.tasks = data.tasks;
             state.history = data.history || [];
             saveLocal();
-            triggerDebouncedSync();
+            fastInstantSync();
             alert("All tasks and history restored successfully!");
             closeModal('backupModal');
           } else {
@@ -1007,7 +987,7 @@
 
       alert("GitHub Vault unlocked & configuration saved!");
       closeModal('settingsModal');
-      syncFromGitHub();
+      syncFromGitHub(true);
     }
 
     function getGitHubToken() {
@@ -1019,8 +999,10 @@
       return localStorage.getItem("gh_repo_vault") || GITHUB_REPO_DEFAULT;
     }
 
-    // ZERO-CLICK AUTO SYNC ENGINE
-    async function syncFromGitHub() {
+    // --- ULTRA-FAST DIRECT LIVE SYNC ENGINE ---
+    async function syncFromGitHub(force = false) {
+      if (state.isPushing && !force) return;
+
       const token = getGitHubToken();
       const repo = getGitHubRepo();
       const dot = document.getElementById('syncDot');
@@ -1034,13 +1016,10 @@
         return;
       }
 
-      if (dot && text) {
-        dot.className = "status-dot syncing";
-        text.innerText = "Syncing...";
-      }
-
       try {
-        const res = await fetch(`https://api.github.com/repos/${repo}/contents/${DATA_FILE_PATH}`, {
+        // Cache-buster timestamp ensures zero GitHub stale cache lag
+        const res = await fetch(`https://api.github.com/repos/${repo}/contents/${DATA_FILE_PATH}?_t=${Date.now()}`, {
+          cache: "no-store",
           headers: {
             "Authorization": `Bearer ${token}`,
             "Accept": "application/vnd.github.v3+json"
@@ -1052,9 +1031,14 @@
           state.sha = json.sha;
           const content = JSON.parse(decodeURIComponent(escape(atob(json.content))));
           if (content.tasks) {
-            state.tasks = content.tasks;
-            state.history = content.history || [];
-            saveLocal();
+            // Check if server data is newer
+            const localStr = JSON.stringify({ tasks: state.tasks, history: state.history });
+            const remoteStr = JSON.stringify({ tasks: content.tasks, history: content.history || [] });
+            if (localStr !== remoteStr) {
+              state.tasks = content.tasks;
+              state.history = content.history || [];
+              saveLocal();
+            }
           }
           if (dot && text) {
             dot.className = "status-dot synced";
@@ -1062,11 +1046,6 @@
           }
         } else if (res.status === 404) {
           await pushToGitHub();
-        } else {
-          if (dot && text) {
-            dot.className = "status-dot error";
-            text.innerText = "Error";
-          }
         }
       } catch (err) {
         if (dot && text) {
@@ -1081,11 +1060,12 @@
       const repo = getGitHubRepo();
       if (!token) return;
 
+      state.isPushing = true;
       const dot = document.getElementById('syncDot');
       const text = document.getElementById('syncText');
       if (dot && text) {
         dot.className = "status-dot syncing";
-        text.innerText = "Pushing...";
+        text.innerText = "Syncing...";
       }
 
       const payload = {
@@ -1095,7 +1075,7 @@
       };
 
       const bodyData = {
-        message: "Auto-sync via My Eisenhower Matrix",
+        message: "Fast-sync via My Eisenhower Matrix",
         content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))))
       };
       if (state.sha) bodyData.sha = state.sha;
@@ -1118,10 +1098,13 @@
             dot.className = "status-dot synced";
             text.innerText = "Synced";
           }
+        } else if (res.status === 409) {
+          // Conflict handle: Fetch sha and retry instantly
+          await syncFromGitHub(true);
         } else {
           if (dot && text) {
             dot.className = "status-dot error";
-            text.innerText = "Conflict";
+            text.innerText = "Error";
           }
         }
       } catch (e) {
@@ -1129,46 +1112,41 @@
           dot.className = "status-dot error";
           text.innerText = "Fail";
         }
+      } finally {
+        state.isPushing = false;
       }
     }
 
-    // Debounced Push: 1 second ke gap ke baad direct save
-    let syncTimer = null;
-    function triggerDebouncedSync() {
-      clearTimeout(syncTimer);
+    // 150ms Instant Action Sync
+    let instantTimer = null;
+    function fastInstantSync() {
+      clearTimeout(instantTimer);
       const dot = document.getElementById('syncDot');
       const text = document.getElementById('syncText');
       if (dot && text) {
         dot.className = "status-dot syncing";
         text.innerText = "Saving...";
       }
-      syncTimer = setTimeout(pushToGitHub, 1000);
+      instantTimer = setTimeout(() => {
+        pushToGitHub();
+      }, 150);
     }
 
-    // Auto-fetch on Focus / Screen Unlock
-    window.addEventListener('focus', () => {
-      syncFromGitHub();
-    });
-
+    // Fast Event Listeners
+    window.addEventListener('focus', () => syncFromGitHub(true));
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        syncFromGitHub();
-      }
+      if (document.visibilityState === 'visible') syncFromGitHub(true);
     });
+    window.addEventListener('online', () => syncFromGitHub(true));
 
-    // Auto-fetch on Internet Reconnect
-    window.addEventListener('online', () => {
-      syncFromGitHub();
-    });
-
-    // Auto Polling in background every 15s
+    // High frequency 4-second live poll
     setInterval(() => {
       if (navigator.onLine && document.visibilityState === 'visible') {
         syncFromGitHub();
       }
-    }, 15000);
+    }, 4000);
 
-    // Reminder Loop (Every 30s)
+    // Reminder Checker (Every 30s)
     setInterval(() => {
       const now = new Date();
       state.tasks.forEach(t => {
@@ -1191,10 +1169,9 @@
       });
     }, 30000);
 
-    // Initial Load
     window.addEventListener('DOMContentLoaded', () => {
       loadLocal();
-      syncFromGitHub();
+      syncFromGitHub(true);
     });
   </script>
 </body>
