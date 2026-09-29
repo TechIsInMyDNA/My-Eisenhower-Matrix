@@ -2,35 +2,35 @@
 <html lang="hi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>My Eisenhower Matrix</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --bg-color: #0b1120;
-      --card-inner: #0f172a;
-      --border-color: #334155;
+      --bg-dark: #070d19;
+      --card-bg: #0f172a;
+      --border-subtle: #1e293b;
       
-      /* Quadrant Exact Pastel Accents */
-      --p1-bg: #fef08a; /* Yellow */
+      /* Vibrant Pastel Themes */
+      --p1-header: #fef08a;
       --p1-text: #713f12;
-      --p1-border: #facc15;
-      --p1-card: #fef9c3;
-      
-      --p2-bg: #fecdd3; /* Pink / Coral */
+      --p1-border: #eab308;
+      --p1-chip: #fef9c3;
+
+      --p2-header: #fecdd3;
       --p2-text: #881337;
-      --p2-border: #fb7185;
-      --p2-card: #ffe4e6;
-      
-      --p3-bg: #cffafe; /* Cyan */
+      --p2-border: #f43f5e;
+      --p2-chip: #ffe4e6;
+
+      --p3-header: #cffafe;
       --p3-text: #164e63;
-      --p3-border: #38bdf8;
-      --p3-card: #e0f2fe;
-      
-      --p4-bg: #bbf7d0; /* Mint Green */
+      --p3-border: #0ea5e9;
+      --p3-chip: #e0f2fe;
+
+      --p4-header: #bbf7d0;
       --p4-text: #14532d;
-      --p4-border: #4ade80;
-      --p4-card: #dcfce7;
+      --p4-border: #22c55e;
+      --p4-chip: #dcfce7;
     }
 
     * {
@@ -38,26 +38,28 @@
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background-color: var(--bg-color);
+      background-color: var(--bg-dark);
       color: #f8fafc;
       height: 100vh;
+      width: 100vw;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
 
-    /* Top App Bar */
+    /* Top Sleek Header */
     header {
-      background: #0f172a;
-      padding: 8px 10px;
+      background: #0b1324;
+      padding: 8px 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #1e293b;
+      border-bottom: 1px solid var(--border-subtle);
       min-height: 48px;
       flex-shrink: 0;
     }
@@ -68,12 +70,11 @@
       gap: 8px;
       font-size: 0.95rem;
       font-weight: 700;
-      line-height: 1.1;
     }
 
     .brand i {
       color: #38bdf8;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
     }
 
     .header-actions {
@@ -87,12 +88,11 @@
       align-items: center;
       gap: 5px;
       font-size: 0.72rem;
-      padding: 3px 8px;
+      padding: 4px 8px;
       border-radius: 20px;
-      background: #1e293b;
-      border: 1px solid var(--border-color);
+      background: #111c33;
+      border: 1px solid #1e293b;
       color: #94a3b8;
-      font-weight: 600;
     }
 
     .status-dot {
@@ -102,19 +102,15 @@
       background: #94a3b8;
     }
     .status-dot.synced { background: #22c55e; }
-    .status-dot.syncing { background: #eab308; animation: pulse 1s infinite; }
+    .status-dot.syncing { background: #eab308; animation: blink 0.9s infinite; }
     .status-dot.error { background: #ef4444; }
 
-    @keyframes pulse {
-      0% { opacity: 0.3; }
-      50% { opacity: 1; }
-      100% { opacity: 0.3; }
-    }
+    @keyframes blink { 50% { opacity: 0.3; } }
 
     .btn-icon {
-      background: #1e293b;
+      background: #111c33;
       color: #cbd5e1;
-      border: 1px solid var(--border-color);
+      border: 1px solid #1e293b;
       border-radius: 6px;
       width: 32px;
       height: 32px;
@@ -122,15 +118,15 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
     }
 
     .btn-icon:active {
-      transform: scale(0.92);
-      background: #334155;
+      transform: scale(0.9);
+      background: #1e293b;
     }
 
-    /* Exact 2x2 Matrix Layout */
+    /* 2x2 Matrix Container - Perfectly Screen Fitted */
     .matrix-grid {
       flex: 1;
       display: grid;
@@ -139,7 +135,7 @@
       gap: 6px;
       padding: 6px;
       overflow: hidden;
-      background: var(--bg-color);
+      background: var(--bg-dark);
     }
 
     .quadrant {
@@ -148,21 +144,21 @@
       flex-direction: column;
       overflow: hidden;
       border: 1.5px solid;
-      background: var(--card-inner);
+      background: var(--card-bg);
       position: relative;
     }
 
     .quadrant.p1 { border-color: var(--p1-border); }
-    .quadrant.p1 .quad-header { background: var(--p1-bg); color: var(--p1-text); }
+    .quadrant.p1 .quad-header { background: var(--p1-header); color: var(--p1-text); }
 
     .quadrant.p2 { border-color: var(--p2-border); }
-    .quadrant.p2 .quad-header { background: var(--p2-bg); color: var(--p2-text); }
+    .quadrant.p2 .quad-header { background: var(--p2-header); color: var(--p2-text); }
 
     .quadrant.p3 { border-color: var(--p3-border); }
-    .quadrant.p3 .quad-header { background: var(--p3-bg); color: var(--p3-text); }
+    .quadrant.p3 .quad-header { background: var(--p3-header); color: var(--p3-text); }
 
     .quadrant.p4 { border-color: var(--p4-border); }
-    .quadrant.p4 .quad-header { background: var(--p4-bg); color: var(--p4-text); }
+    .quadrant.p4 .quad-header { background: var(--p4-header); color: var(--p4-text); }
 
     .quad-header {
       padding: 6px 8px;
@@ -171,10 +167,7 @@
       align-items: center;
       font-weight: 700;
       font-size: 0.82rem;
-      user-select: none;
       flex-shrink: 0;
-      border-top-left-radius: 10px;
-      border-top-right-radius: 10px;
     }
 
     .quad-title {
@@ -184,17 +177,17 @@
     }
 
     .priority-badge {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       padding: 1px 5px;
       border-radius: 4px;
-      background: rgba(0, 0, 0, 0.12);
+      background: rgba(0, 0, 0, 0.15);
       font-weight: 800;
     }
 
     .quad-tools {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
     .quad-tools button {
@@ -205,16 +198,15 @@
       color: inherit;
       display: flex;
       align-items: center;
-      justify-content: center;
     }
 
-    /* Inline Quick Add Input */
+    /* Fast Inline Add Input */
     .inline-add-bar {
       display: none;
-      padding: 5px;
-      background: #1e293b;
-      border-bottom: 1px solid #334155;
-      gap: 4px;
+      padding: 5px 6px;
+      background: #111c33;
+      border-bottom: 1px solid #1e293b;
+      gap: 5px;
       flex-shrink: 0;
     }
 
@@ -224,66 +216,66 @@
 
     .inline-add-bar input {
       flex: 1;
-      background: #0b1120;
-      border: 1px solid var(--border-color);
+      background: #070d19;
+      border: 1px solid #334155;
       color: #fff;
-      padding: 4px 6px;
+      padding: 5px 8px;
       border-radius: 5px;
       font-size: 0.75rem;
       outline: none;
+      user-select: text;
     }
 
     .inline-add-bar button {
       background: #2563eb;
       border: none;
       color: white;
-      padding: 0 8px;
+      padding: 0 10px;
       border-radius: 5px;
-      font-size: 0.72rem;
+      font-size: 0.75rem;
       font-weight: 600;
       cursor: pointer;
     }
 
-    /* Scrollable Tasks Inside Box */
+    /* Task Items Scroll Area */
     .task-list {
       flex: 1;
       overflow-y: auto;
-      padding: 5px;
+      padding: 6px;
       display: flex;
       flex-direction: column;
       gap: 5px;
     }
 
     .task-card {
-      background: #1e293b;
-      color: #f1f5f9;
-      border: 1px solid #334155;
-      padding: 5px 6px;
-      border-radius: 6px;
+      background: #152238;
+      border: 1px solid #1e293b;
+      padding: 6px 8px;
+      border-radius: 7px;
       display: flex;
       flex-direction: column;
-      gap: 3px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.25);
-      transition: all 0.25s ease;
+      gap: 4px;
+      transition: all 0.22s ease;
+      position: relative;
     }
 
     .task-card.completing {
       opacity: 0;
-      transform: scale(0.94);
+      transform: scale(0.92);
     }
 
     .task-main {
       display: flex;
       align-items: flex-start;
-      gap: 6px;
+      gap: 7px;
     }
 
     .task-checkbox {
       margin-top: 2px;
       cursor: pointer;
       accent-color: #38bdf8;
-      width: 15px;
-      height: 15px;
+      width: 16px;
+      height: 16px;
       flex-shrink: 0;
     }
 
@@ -291,9 +283,11 @@
       flex: 1;
       font-size: 0.78rem;
       line-height: 1.3;
+      color: #f1f5f9;
       font-weight: 500;
       word-break: break-word;
       cursor: pointer;
+      user-select: text;
     }
 
     .task-meta {
@@ -302,7 +296,7 @@
       align-items: center;
       font-size: 0.65rem;
       color: #94a3b8;
-      margin-left: 21px;
+      margin-left: 23px;
     }
 
     .reminder-badge {
@@ -310,7 +304,7 @@
       align-items: center;
       gap: 3px;
       background: rgba(255, 255, 255, 0.08);
-      padding: 1px 4px;
+      padding: 1px 5px;
       border-radius: 4px;
       font-weight: 600;
       cursor: pointer;
@@ -321,36 +315,34 @@
       color: #fff;
     }
 
-    /* Modals & Dialogs */
+    /* Modal Layer */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(3px);
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
       z-index: 100;
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 14px;
+      padding: 12px;
     }
 
-    .modal-overlay.active {
-      display: flex;
-    }
+    .modal-overlay.active { display: flex; }
 
     .modal-box {
-      background: #1e293b;
-      border: 1px solid var(--border-color);
+      background: #0f172a;
+      border: 1px solid #334155;
       border-radius: 10px;
       width: 100%;
-      max-width: 440px;
+      max-width: 420px;
       max-height: 85vh;
       overflow-y: auto;
       padding: 16px;
       display: flex;
       flex-direction: column;
       gap: 12px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     }
 
     .modal-title {
@@ -381,13 +373,14 @@
     }
 
     .form-group input, .form-group select, .form-group textarea {
-      background: #0b1120;
-      border: 1px solid var(--border-color);
+      background: #070d19;
+      border: 1px solid #334155;
       color: #fff;
-      padding: 7px 9px;
+      padding: 8px 10px;
       border-radius: 6px;
       font-size: 0.8rem;
       outline: none;
+      user-select: text;
     }
 
     .btn-primary {
@@ -406,9 +399,9 @@
     }
 
     .btn-secondary {
-      background: #334155;
+      background: #1e293b;
       color: white;
-      border: none;
+      border: 1px solid #334155;
       padding: 8px 10px;
       border-radius: 6px;
       font-size: 0.78rem;
@@ -416,9 +409,9 @@
     }
 
     .history-item {
-      background: #0b1120;
-      border: 1px solid var(--border-color);
-      padding: 7px 9px;
+      background: #070d19;
+      border: 1px solid #1e293b;
+      padding: 7px 10px;
       border-radius: 6px;
       display: flex;
       justify-content: space-between;
@@ -431,6 +424,7 @@
       text-decoration: line-through;
       color: #94a3b8;
       flex: 1;
+      user-select: text;
     }
 
     .history-item .hist-meta {
@@ -438,24 +432,30 @@
       color: #64748b;
     }
 
-    /* Exact Widget View / Minimal View (?view=widget) */
+    /* PURE HOMESCREEN WIDGET MODE (?view=widget) */
     body.widget-mode header {
-      display: none;
+      display: none !important;
     }
     body.widget-mode .matrix-grid {
-      padding: 4px;
-      gap: 4px;
+      padding: 2px !important;
+      gap: 4px !important;
     }
     body.widget-mode .quad-header {
-      padding: 4px 6px;
-      font-size: 0.76rem;
+      padding: 4px 6px !important;
+      font-size: 0.76rem !important;
+    }
+    body.widget-mode .task-card {
+      padding: 5px 6px !important;
+    }
+    body.widget-mode .task-text {
+      font-size: 0.75rem !important;
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Header Navigation -->
-  <header>
+  <!-- App Header -->
+  <header id="mainHeader">
     <div class="brand">
       <i class="fa-solid fa-shapes"></i>
       <span>My Eisenhower Matrix</span>
@@ -471,11 +471,11 @@
       <button class="btn-icon" id="btnHistory" title="History"><i class="fa-solid fa-clock-rotate-left"></i></button>
       <button class="btn-icon" id="btnBackup" title="Backup & Restore"><i class="fa-solid fa-database"></i></button>
       <button class="btn-icon" id="btnWidgetToggle" title="Widget View Toggle"><i class="fa-solid fa-table-cells-large"></i></button>
-      <button class="btn-icon" id="btnSettings" title="GitHub Setup"><i class="fa-solid fa-gear"></i></button>
+      <button class="btn-icon" id="btnSettings" title="GitHub Vault"><i class="fa-solid fa-gear"></i></button>
     </div>
   </header>
 
-  <!-- 4-Quadrant 2x2 Grid -->
+  <!-- 2x2 Grid Quad Matrix -->
   <main class="matrix-grid">
     <!-- P1 -->
     <div class="quadrant p1" data-quad="p1">
@@ -486,7 +486,7 @@
         </div>
         <div class="quad-tools">
           <button onclick="speakQuadrant('p1')" title="Listen"><i class="fa-solid fa-volume-high"></i></button>
-          <button onclick="toggleInlineAdd('p1')" title="Add Task"><i class="fa-solid fa-plus"></i></button>
+          <button onclick="toggleInlineAdd('p1')" title="Quick Add"><i class="fa-solid fa-plus"></i></button>
         </div>
       </div>
       <div class="inline-add-bar" id="addBar-p1">
@@ -505,7 +505,7 @@
         </div>
         <div class="quad-tools">
           <button onclick="speakQuadrant('p2')" title="Listen"><i class="fa-solid fa-volume-high"></i></button>
-          <button onclick="toggleInlineAdd('p2')" title="Add Task"><i class="fa-solid fa-plus"></i></button>
+          <button onclick="toggleInlineAdd('p2')" title="Quick Add"><i class="fa-solid fa-plus"></i></button>
         </div>
       </div>
       <div class="inline-add-bar" id="addBar-p2">
@@ -524,7 +524,7 @@
         </div>
         <div class="quad-tools">
           <button onclick="speakQuadrant('p3')" title="Listen"><i class="fa-solid fa-volume-high"></i></button>
-          <button onclick="toggleInlineAdd('p3')" title="Add Task"><i class="fa-solid fa-plus"></i></button>
+          <button onclick="toggleInlineAdd('p3')" title="Quick Add"><i class="fa-solid fa-plus"></i></button>
         </div>
       </div>
       <div class="inline-add-bar" id="addBar-p3">
@@ -543,7 +543,7 @@
         </div>
         <div class="quad-tools">
           <button onclick="speakQuadrant('p4')" title="Listen"><i class="fa-solid fa-volume-high"></i></button>
-          <button onclick="toggleInlineAdd('p4')" title="Add Task"><i class="fa-solid fa-plus"></i></button>
+          <button onclick="toggleInlineAdd('p4')" title="Quick Add"><i class="fa-solid fa-plus"></i></button>
         </div>
       </div>
       <div class="inline-add-bar" id="addBar-p4">
@@ -554,7 +554,7 @@
     </div>
   </main>
 
-  <!-- GitHub Setup Vault Modal -->
+  <!-- GitHub Vault Modal -->
   <div class="modal-overlay" id="settingsModal">
     <div class="modal-box">
       <div class="modal-title">
@@ -562,20 +562,18 @@
         <button class="modal-close" onclick="closeModal('settingsModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <!-- Step 1: Master Password Authentication -->
       <div id="vaultAuthStep">
         <div class="form-group">
-          <label>Enter Master Password</label>
-          <input type="password" id="vaultAuthPass" placeholder="Master Password" autocomplete="off">
+          <label>Master Password</label>
+          <input type="password" id="vaultAuthPass" placeholder="Enter Shubham@144" autocomplete="off">
         </div>
-        <button class="btn-primary" style="margin-top:10px;" onclick="verifyMasterPass()"><i class="fa-solid fa-lock-open"></i> Unlock Vault</button>
+        <button class="btn-primary" style="margin-top:10px;" onclick="verifyMasterPass()"><i class="fa-solid fa-unlock"></i> Unlock Vault</button>
       </div>
 
-      <!-- Step 2: Hidden Config Details -->
       <div id="vaultConfigStep" style="display:none; flex-direction:column; gap:10px;">
         <div class="form-group">
           <label>GitHub Personal Access Token (PAT)</label>
-          <input type="password" id="vaultToken" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+          <input type="password" id="vaultToken" placeholder="ghp_xxx" autocomplete="off">
         </div>
         <div class="form-group">
           <label>Repository (Owner/Repo)</label>
@@ -593,15 +591,11 @@
         <span>Backup & Restore</span>
         <button class="modal-close" onclick="closeModal('backupModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      
       <p style="font-size:0.75rem; color:#94a3b8;">
-        Export current tasks & completed history to a JSON backup file, or restore with 0 data loss.
+        Export current tasks & completed history to a JSON backup file, or restore anytime.
       </p>
-
       <button class="btn-primary" onclick="exportBackup()"><i class="fa-solid fa-download"></i> Download Full Backup (.json)</button>
-      
-      <div style="border-top:1px solid var(--border-color); margin: 4px 0;"></div>
-
+      <div style="border-top:1px solid #1e293b; margin: 4px 0;"></div>
       <div class="form-group">
         <label>Select Backup JSON File to Restore:</label>
         <input type="file" id="importFileInput" accept=".json">
@@ -610,19 +604,17 @@
     </div>
   </div>
 
-  <!-- Task Detail / Reminder Modal -->
+  <!-- Task Detail & Reminder Modal -->
   <div class="modal-overlay" id="reminderModal">
     <div class="modal-box">
       <div class="modal-title">
-        <span>Edit Task & Reminder</span>
+        <span>Task & Reminder Alert</span>
         <button class="modal-close" onclick="closeModal('reminderModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
-
       <div class="form-group">
-        <label>Task Description</label>
+        <label>Task Content</label>
         <textarea id="editTaskText" rows="3"></textarea>
       </div>
-
       <div class="form-group">
         <label>Quadrant</label>
         <select id="editTaskQuadrant">
@@ -632,12 +624,10 @@
           <option value="p4">P4 - Not Important & Not Urgent</option>
         </select>
       </div>
-
       <div class="form-group">
         <label>Optional Reminder (Date & Time)</label>
         <input type="datetime-local" id="editTaskReminder">
       </div>
-
       <div style="display:flex; justify-content:space-between; gap:8px; margin-top:6px;">
         <button class="btn-secondary" style="background:#ef4444;" onclick="deleteCurrentTask()"><i class="fa-solid fa-trash"></i> Delete</button>
         <button class="btn-primary" onclick="saveTaskModal()"><i class="fa-solid fa-check"></i> Save</button>
@@ -645,7 +635,7 @@
     </div>
   </div>
 
-  <!-- Completed Tasks History Modal -->
+  <!-- History Drawer Modal -->
   <div class="modal-overlay" id="historyModal">
     <div class="modal-box">
       <div class="modal-title">
@@ -672,12 +662,13 @@
       activeTaskId: null
     };
 
-    // Auto-detect Widget parameter
-    if (new URLSearchParams(window.location.search).get('view') === 'widget') {
+    // Auto-switch to widget view if URL contains view=widget
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('view') === 'widget') {
       document.body.classList.add('widget-mode');
     }
 
-    // Audio chime for alerts
+    // Audio chime player
     function playChime() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -719,7 +710,6 @@
       renderMatrix();
     }
 
-    // Render Matrix
     function renderMatrix() {
       ['p1', 'p2', 'p3', 'p4'].forEach(quad => {
         const container = document.getElementById(`list-${quad}`);
@@ -757,7 +747,7 @@
       });
     }
 
-    // Inline Add Controls
+    // Inline Add Input
     function toggleInlineAdd(quad) {
       const bar = document.getElementById(`addBar-${quad}`);
       bar.classList.toggle('active');
@@ -792,7 +782,7 @@
       triggerDebouncedSync();
     }
 
-    // Complete Task
+    // Task Complete Strikethrough
     function completeTask(id) {
       const card = document.getElementById(`card-${id}`);
       if (card) {
@@ -810,14 +800,13 @@
           saveLocal();
           triggerDebouncedSync();
         }
-      }, 300);
+      }, 260);
     }
 
-    // Modal Utilities
+    // Modals
     function openModal(id) { document.getElementById(id).classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-    // Task & Reminder Modal
     function openEditModal(id) {
       const task = state.tasks.find(t => t.id === id);
       if (!task) return;
@@ -847,12 +836,12 @@
       closeModal('reminderModal');
     }
 
-    // History Modal Handlers
+    // History Actions
     document.getElementById('btnHistory').onclick = () => {
       const container = document.getElementById('historyListContainer');
       container.innerHTML = "";
       if (state.history.length === 0) {
-        container.innerHTML = "<div style='color:#94a3b8; text-align:center; padding:10px; font-size:0.8rem;'>No completed tasks</div>";
+        container.innerHTML = "<div style='color:#94a3b8; text-align:center; padding:10px;'>No completed tasks</div>";
       } else {
         state.history.forEach(item => {
           const div = document.createElement("div");
@@ -883,7 +872,7 @@
     }
 
     function clearAllHistory() {
-      if (confirm("Clear all completed tasks from history?")) {
+      if (confirm("Clear all completed task history?")) {
         state.history = [];
         saveLocal();
         triggerDebouncedSync();
@@ -891,7 +880,7 @@
       }
     }
 
-    // Backup & Restore
+    // Export & Import Backup
     document.getElementById('btnBackup').onclick = () => openModal('backupModal');
 
     function exportBackup() {
@@ -911,7 +900,7 @@
     function importBackup() {
       const fileInput = document.getElementById('importFileInput');
       if (!fileInput.files.length) {
-        alert("Please select a JSON backup file");
+        alert("Please select a JSON file");
         return;
       }
       const reader = new FileReader();
@@ -923,7 +912,7 @@
             state.history = data.history || [];
             saveLocal();
             triggerDebouncedSync();
-            alert("All tasks and history restored successfully!");
+            alert("Backup restored successfully!");
             closeModal('backupModal');
           } else {
             alert("Invalid backup file format");
@@ -935,7 +924,7 @@
       reader.readAsText(fileInput.files[0]);
     }
 
-    // Speech Reader
+    // Text to Speech
     function speakQuadrant(quad) {
       const list = state.tasks.filter(t => t.quadrant === quad);
       if (list.length === 0) {
@@ -949,12 +938,12 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    // Widget Toggle Button
+    // Toggle Widget View
     document.getElementById('btnWidgetToggle').onclick = () => {
       document.body.classList.toggle('widget-mode');
     };
 
-    // GitHub Settings with Master Password Vault Protection
+    // GitHub Settings with Master Password Vault
     document.getElementById('btnSettings').onclick = () => {
       document.getElementById('vaultAuthStep').style.display = "block";
       document.getElementById('vaultConfigStep').style.display = "none";
@@ -1102,7 +1091,7 @@
 
     document.getElementById('btnSyncNow').onclick = () => syncFromGitHub();
 
-    // Reminder Checker (Every 30s)
+    // Reminder Loop (Every 30s)
     setInterval(() => {
       const now = new Date();
       state.tasks.forEach(t => {
