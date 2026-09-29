@@ -1,67 +1,166 @@
 {
   "tasks": [
     {
-      "id": "task_1790710235643_j98q",
-      "text": "Rtyyff",
-      "quadrant": "urgent_important",
-      "createdAt": "2026-09-29T19:30:35.643Z",
-      "dueDate": null,
-      "completed": false,
-      "completedAt": null
+      "id": "task_p1_1",
+      "text": "Kal chuhe ki liye jordar trap ek",
+      "quadrant": "p1",
+      "createdAt": "29 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p1_2",
+      "text": "Sulphur 200ch lena.. Kal subah uthke saath hi 2 boond pahle direct jeeb me",
+      "quadrant": "p1",
+      "createdAt": "29 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p1_3",
+      "text": "Mummy ke aadhar me mob no change krna",
+      "quadrant": "p1",
+      "createdAt": "28 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p1_4",
+      "text": "1 oct gdcda pis srvices chalu krna render me",
+      "quadrant": "p1",
+      "createdAt": "28 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p1_5",
+      "text": "Pappa ppp card followup and all agar aata hai toh... purane wale ka paisa lena vapsi 236",
+      "quadrant": "p1",
+      "createdAt": "27 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p2_1",
+      "text": "My Eisenhower matrix all banana krna.. Main pc me index save github se My Eisenhower Matrix folder bannake and lappy and pc me pin krke taskbar me and token sync",
+      "quadrant": "p2",
+      "createdAt": "29 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p2_2",
+      "text": "Sgm wholesale details banana all sg order supply system me hi integrate krna",
+      "quadrant": "p2",
+      "createdAt": "29 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p2_3",
+      "text": "Rahul lalshah patients dashboard me add.. Bakiyo ka add krna",
+      "quadrant": "p2",
+      "createdAt": "29 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p2_4",
+      "text": "Insurance ka intezaam krna... charo ka alag alag",
+      "quadrant": "p2",
+      "createdAt": "26 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p2_5",
+      "text": "Do din only expiry focus krna... cosmetic general ki exp banana",
+      "quadrant": "p2",
+      "createdAt": "26 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p2_6",
+      "text": "Ambar Fair Financial Management System all ok krna",
+      "quadrant": "p2",
+      "createdAt": "24 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p3_1",
+      "text": "Avi cn 20 telmikind 40 telmed 40 2 2 patte dena likhna paise",
+      "quadrant": "p3",
+      "createdAt": "29 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p3_2",
+      "text": "Ravibabu ke yaha 3 pkt bhejna chane",
+      "quadrant": "p3",
+      "createdAt": "29 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p3_3",
+      "text": "Robin wm rc 6kg legya bill banake hisaab kitaab dekhna",
+      "quadrant": "p3",
+      "createdAt": "29 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p3_4",
+      "text": "Swati bhabhi dawai ready krna.. Dawai pahuchana",
+      "quadrant": "p3",
+      "createdAt": "28 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p3_5",
+      "text": "Durgesh ka atm pin set and use and 300 lena atm ke",
+      "quadrant": "p3",
+      "createdAt": "27 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p4_1",
+      "text": "Foosball order",
+      "quadrant": "p4",
+      "createdAt": "27 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p4_2",
+      "text": "Kuku fm listen",
+      "quadrant": "p4",
+      "createdAt": "26 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p4_3",
+      "text": "Asur web series download",
+      "quadrant": "p4",
+      "createdAt": "25 Sep 2026",
+      "reminder": null,
+      "completed": false
+    },
+    {
+      "id": "task_p4_4",
+      "text": "Swamiji own... Live wallpaper banana",
+      "quadrant": "p4",
+      "createdAt": "24 Sep 2026",
+      "reminder": null,
+      "completed": false
     }
   ],
-  "history": [
-    {
-      "id": "demo_2",
-      "text": "Yono apply mummy",
-      "quadrant": "not_urgent_important",
-      "createdAt": "2026-09-29T19:25:45.822Z",
-      "dueDate": null,
-      "completed": true,
-      "completedAt": "2026-09-29T19:27:08.940Z"
-    },
-    {
-      "id": "demo_5",
-      "text": "aechitr bhiya se 2re order ka paisa",
-      "quadrant": "urgent_not_important",
-      "createdAt": "2026-09-29T19:25:45.822Z",
-      "dueDate": null,
-      "completed": true,
-      "completedAt": "2026-09-29T19:27:07.783Z"
-    },
-    {
-      "id": "demo_4",
-      "text": "archit bhiya se 0urana paisa",
-      "quadrant": "urgent_not_important",
-      "createdAt": "2026-09-29T19:25:45.822Z",
-      "dueDate": null,
-      "completed": true,
-      "completedAt": "2026-09-29T19:26:28.477Z"
-    },
-    {
-      "id": "demo_3",
-      "text": "paise jama hone ke baad 50k mummy ko saalbhar ka dena",
-      "quadrant": "not_urgent_important",
-      "createdAt": "2026-09-29T19:25:45.822Z",
-      "dueDate": null,
-      "completed": true,
-      "completedAt": "2026-09-29T19:25:50.268Z"
-    },
-    {
-      "id": "demo_1",
-      "text": "Janta Bank bhojha utarna",
-      "quadrant": "not_urgent_important",
-      "createdAt": "2026-09-29T19:25:45.821Z",
-      "dueDate": null,
-      "completed": true,
-      "completedAt": "2026-09-29T19:25:49.348Z"
-    }
-  ],
-  "limits": {
-    "urgent_important": 0,
-    "not_urgent_important": 0,
-    "urgent_not_important": 0,
-    "not_urgent_not_important": 0
-  },
-  "lastUpdated": "2026-09-29T19:31:05.547Z"
+  "history": [],
+  "updatedAt": "2026-09-29T20:13:13.792Z"
 }
