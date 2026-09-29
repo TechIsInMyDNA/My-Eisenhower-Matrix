@@ -1,16 +1,15 @@
 {
-  "tasks": [
+  "tasks": [],
+  "history": [
     {
       "id": "demo_2",
       "text": "Yono apply mummy",
       "quadrant": "not_urgent_important",
       "createdAt": "2026-09-29T19:25:45.822Z",
       "dueDate": null,
-      "completed": false,
-      "completedAt": null
-    }
-  ],
-  "history": [
+      "completed": true,
+      "completedAt": "2026-09-29T19:27:08.940Z"
+    },
     {
       "id": "demo_5",
       "text": "aechitr bhiya se 2re order ka paisa",
@@ -54,5 +53,5 @@
     "urgent_not_important": 0,
     "not_urgent_not_important": 0
   },
-  "lastUpdated": "2026-09-29T19:27:08.591Z"
+  "lastUpdated": "2026-09-29T19:27:09.748Z"
 }
