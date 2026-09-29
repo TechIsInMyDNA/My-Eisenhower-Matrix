@@ -7,32 +7,30 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --bg-color: #0f172a;
-      --card-bg: #1e293b;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
+      --bg-color: #0b1120;
+      --card-inner: #0f172a;
       --border-color: #334155;
       
-      /* Quadrant Accent Tints (Pastel/Crisp) */
+      /* Quadrant Exact Pastel Accents */
       --p1-bg: #fef08a; /* Yellow */
       --p1-text: #713f12;
-      --p1-card: #fef9c3;
       --p1-border: #facc15;
+      --p1-card: #fef9c3;
       
-      --p2-bg: #fecdd3; /* Rose / Coral */
+      --p2-bg: #fecdd3; /* Pink / Coral */
       --p2-text: #881337;
-      --p2-card: #ffe4e6;
       --p2-border: #fb7185;
+      --p2-card: #ffe4e6;
       
       --p3-bg: #cffafe; /* Cyan */
       --p3-text: #164e63;
-      --p3-card: #e0f2fe;
       --p3-border: #38bdf8;
+      --p3-card: #e0f2fe;
       
       --p4-bg: #bbf7d0; /* Mint Green */
       --p4-text: #14532d;
-      --p4-card: #dcfce7;
       --p4-border: #4ade80;
+      --p4-card: #dcfce7;
     }
 
     * {
@@ -45,22 +43,22 @@
 
     body {
       background-color: var(--bg-color);
-      color: var(--text-main);
+      color: #f8fafc;
       height: 100vh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
 
-    /* Top Navigation */
+    /* Top App Bar */
     header {
-      background: #111827;
-      padding: 8px 12px;
+      background: #0f172a;
+      padding: 8px 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border-color);
-      min-height: 52px;
+      border-bottom: 1px solid #1e293b;
+      min-height: 48px;
       flex-shrink: 0;
     }
 
@@ -68,56 +66,38 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       font-weight: 700;
-      letter-spacing: 0.5px;
+      line-height: 1.1;
     }
 
     .brand i {
       color: #38bdf8;
+      font-size: 1.1rem;
     }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 6px;
-    }
-
-    .btn-icon {
-      background: #1e293b;
-      color: #cbd5e1;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      width: 34px;
-      height: 34px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 0.85rem;
-      transition: all 0.2s ease;
-    }
-
-    .btn-icon:active {
-      transform: scale(0.92);
-      background: #334155;
+      gap: 5px;
     }
 
     .sync-status {
       display: flex;
       align-items: center;
-      gap: 4px;
-      font-size: 0.75rem;
-      padding: 4px 8px;
+      gap: 5px;
+      font-size: 0.72rem;
+      padding: 3px 8px;
       border-radius: 20px;
       background: #1e293b;
       border: 1px solid var(--border-color);
       color: #94a3b8;
+      font-weight: 600;
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: #94a3b8;
     }
@@ -126,12 +106,31 @@
     .status-dot.error { background: #ef4444; }
 
     @keyframes pulse {
-      0% { opacity: 0.4; }
+      0% { opacity: 0.3; }
       50% { opacity: 1; }
-      100% { opacity: 0.4; }
+      100% { opacity: 0.3; }
     }
 
-    /* 2x2 Matrix Layout */
+    .btn-icon {
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .btn-icon:active {
+      transform: scale(0.92);
+      background: #334155;
+    }
+
+    /* Exact 2x2 Matrix Layout */
     .matrix-grid {
       flex: 1;
       display: grid;
@@ -140,65 +139,62 @@
       gap: 6px;
       padding: 6px;
       overflow: hidden;
-      background: #020617;
+      background: var(--bg-color);
     }
 
     .quadrant {
-      border-radius: 10px;
+      border-radius: 12px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
       border: 1.5px solid;
-      background: rgba(15, 23, 42, 0.95);
+      background: var(--card-inner);
       position: relative;
     }
 
-    /* Quadrant Color Accents */
     .quadrant.p1 { border-color: var(--p1-border); }
     .quadrant.p1 .quad-header { background: var(--p1-bg); color: var(--p1-text); }
-    .quadrant.p1 .task-card { background: var(--p1-card); color: #000; border-left: 4px solid var(--p1-text); }
 
     .quadrant.p2 { border-color: var(--p2-border); }
     .quadrant.p2 .quad-header { background: var(--p2-bg); color: var(--p2-text); }
-    .quadrant.p2 .task-card { background: var(--p2-card); color: #000; border-left: 4px solid var(--p2-text); }
 
     .quadrant.p3 { border-color: var(--p3-border); }
     .quadrant.p3 .quad-header { background: var(--p3-bg); color: var(--p3-text); }
-    .quadrant.p3 .task-card { background: var(--p3-card); color: #000; border-left: 4px solid var(--p3-text); }
 
     .quadrant.p4 { border-color: var(--p4-border); }
     .quadrant.p4 .quad-header { background: var(--p4-bg); color: var(--p4-text); }
-    .quadrant.p4 .task-card { background: var(--p4-card); color: #000; border-left: 4px solid var(--p4-text); }
 
     .quad-header {
-      padding: 6px 10px;
+      padding: 6px 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-weight: 700;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       user-select: none;
       flex-shrink: 0;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
     }
 
     .quad-title {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
 
     .priority-badge {
-      font-size: 0.8rem;
-      padding: 1px 6px;
+      font-size: 0.75rem;
+      padding: 1px 5px;
       border-radius: 4px;
-      background: rgba(0, 0, 0, 0.15);
+      background: rgba(0, 0, 0, 0.12);
       font-weight: 800;
     }
 
     .quad-tools {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
     }
 
     .quad-tools button {
@@ -207,17 +203,19 @@
       font-size: 0.95rem;
       cursor: pointer;
       color: inherit;
-      padding: 2px 4px;
-      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* Inline Quick Add Bar inside Quadrant */
+    /* Inline Quick Add Input */
     .inline-add-bar {
       display: none;
-      padding: 6px 8px;
+      padding: 5px;
       background: #1e293b;
-      border-bottom: 1px solid var(--border-color);
-      gap: 6px;
+      border-bottom: 1px solid #334155;
+      gap: 4px;
+      flex-shrink: 0;
     }
 
     .inline-add-bar.active {
@@ -226,96 +224,93 @@
 
     .inline-add-bar input {
       flex: 1;
-      background: #0f172a;
+      background: #0b1120;
       border: 1px solid var(--border-color);
       color: #fff;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.8rem;
+      padding: 4px 6px;
+      border-radius: 5px;
+      font-size: 0.75rem;
       outline: none;
     }
 
     .inline-add-bar button {
-      background: #3b82f6;
+      background: #2563eb;
       border: none;
-      color: #fff;
-      padding: 0 10px;
-      border-radius: 6px;
-      font-size: 0.8rem;
+      color: white;
+      padding: 0 8px;
+      border-radius: 5px;
+      font-size: 0.72rem;
       font-weight: 600;
       cursor: pointer;
     }
 
-    /* Tasks Scroll Container */
+    /* Scrollable Tasks Inside Box */
     .task-list {
       flex: 1;
       overflow-y: auto;
-      padding: 6px;
+      padding: 5px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 5px;
     }
 
     .task-card {
-      padding: 6px 8px;
+      background: #1e293b;
+      color: #f1f5f9;
+      border: 1px solid #334155;
+      padding: 5px 6px;
       border-radius: 6px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      gap: 3px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.25);
       transition: all 0.25s ease;
-      position: relative;
     }
 
     .task-card.completing {
       opacity: 0;
-      transform: scale(0.92);
+      transform: scale(0.94);
     }
 
     .task-main {
       display: flex;
       align-items: flex-start;
-      gap: 8px;
+      gap: 6px;
     }
 
     .task-checkbox {
-      margin-top: 3px;
+      margin-top: 2px;
       cursor: pointer;
-      accent-color: #0f172a;
-      width: 16px;
-      height: 16px;
+      accent-color: #38bdf8;
+      width: 15px;
+      height: 15px;
       flex-shrink: 0;
     }
 
     .task-text {
       flex: 1;
-      font-size: 0.82rem;
-      line-height: 1.35;
+      font-size: 0.78rem;
+      line-height: 1.3;
       font-weight: 500;
       word-break: break-word;
+      cursor: pointer;
     }
 
     .task-meta {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.68rem;
-      color: #475569;
-      margin-left: 24px;
-    }
-
-    .meta-time {
-      display: flex;
-      align-items: center;
-      gap: 4px;
+      font-size: 0.65rem;
+      color: #94a3b8;
+      margin-left: 21px;
     }
 
     .reminder-badge {
       display: inline-flex;
       align-items: center;
       gap: 3px;
-      background: rgba(0, 0, 0, 0.08);
-      padding: 1px 5px;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 1px 4px;
       border-radius: 4px;
       font-weight: 600;
       cursor: pointer;
@@ -326,17 +321,17 @@
       color: #fff;
     }
 
-    /* Modals & Drawers */
+    /* Modals & Dialogs */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.75);
       backdrop-filter: blur(3px);
       z-index: 100;
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 14px;
     }
 
     .modal-overlay.active {
@@ -346,20 +341,20 @@
     .modal-box {
       background: #1e293b;
       border: 1px solid var(--border-color);
-      border-radius: 12px;
+      border-radius: 10px;
       width: 100%;
-      max-width: 480px;
+      max-width: 440px;
       max-height: 85vh;
       overflow-y: auto;
-      padding: 18px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     }
 
     .modal-title {
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       font-weight: 700;
       display: flex;
       justify-content: space-between;
@@ -377,58 +372,53 @@
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 5px;
     }
 
     .form-group label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
+      font-size: 0.75rem;
+      color: #94a3b8;
     }
 
     .form-group input, .form-group select, .form-group textarea {
-      background: #0f172a;
+      background: #0b1120;
       border: 1px solid var(--border-color);
       color: #fff;
-      padding: 8px 10px;
+      padding: 7px 9px;
       border-radius: 6px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       outline: none;
-    }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 60px;
     }
 
     .btn-primary {
       background: #2563eb;
       color: white;
       border: none;
-      padding: 10px;
+      padding: 9px;
       border-radius: 6px;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
+      font-size: 0.82rem;
     }
 
     .btn-secondary {
       background: #334155;
       color: white;
       border: none;
-      padding: 8px 12px;
+      padding: 8px 10px;
       border-radius: 6px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       cursor: pointer;
     }
 
-    /* History List Items */
     .history-item {
-      background: #0f172a;
+      background: #0b1120;
       border: 1px solid var(--border-color);
-      padding: 8px 10px;
+      padding: 7px 9px;
       border-radius: 6px;
       display: flex;
       justify-content: space-between;
@@ -437,37 +427,34 @@
     }
 
     .history-item .hist-text {
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       text-decoration: line-through;
       color: #94a3b8;
       flex: 1;
     }
 
     .history-item .hist-meta {
-      font-size: 0.68rem;
+      font-size: 0.65rem;
       color: #64748b;
     }
 
-    /* Widget Optimized View (?view=widget) */
+    /* Exact Widget View / Minimal View (?view=widget) */
     body.widget-mode header {
       display: none;
     }
     body.widget-mode .matrix-grid {
-      padding: 2px;
+      padding: 4px;
       gap: 4px;
     }
     body.widget-mode .quad-header {
       padding: 4px 6px;
-      font-size: 0.78rem;
-    }
-    body.widget-mode .task-text {
-      font-size: 0.75rem;
+      font-size: 0.76rem;
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Action Header -->
+  <!-- Top Header Navigation -->
   <header>
     <div class="brand">
       <i class="fa-solid fa-shapes"></i>
@@ -476,21 +463,21 @@
 
     <div class="header-actions">
       <div class="sync-status" id="syncStatus" title="GitHub Status">
-        <span class="status-dot synced" id="syncDot"></span>
-        <span id="syncText">Sync</span>
+        <span class="status-dot" id="syncDot"></span>
+        <span id="syncText">No Token</span>
       </div>
 
       <button class="btn-icon" id="btnSyncNow" title="Sync Live"><i class="fa-solid fa-rotate"></i></button>
       <button class="btn-icon" id="btnHistory" title="History"><i class="fa-solid fa-clock-rotate-left"></i></button>
       <button class="btn-icon" id="btnBackup" title="Backup & Restore"><i class="fa-solid fa-database"></i></button>
-      <button class="btn-icon" id="btnWidgetToggle" title="Widget View"><i class="fa-solid fa-table-cells-large"></i></button>
+      <button class="btn-icon" id="btnWidgetToggle" title="Widget View Toggle"><i class="fa-solid fa-table-cells-large"></i></button>
       <button class="btn-icon" id="btnSettings" title="GitHub Setup"><i class="fa-solid fa-gear"></i></button>
     </div>
   </header>
 
-  <!-- 2x2 Quadrant Grid -->
+  <!-- 4-Quadrant 2x2 Grid -->
   <main class="matrix-grid">
-    <!-- P1: Urgent & Important -->
+    <!-- P1 -->
     <div class="quadrant p1" data-quad="p1">
       <div class="quad-header">
         <div class="quad-title">
@@ -498,8 +485,8 @@
           <span>Important & Urgent</span>
         </div>
         <div class="quad-tools">
-          <button class="btn-speech" onclick="speakQuadrant('p1')" title="Read P1"><i class="fa-solid fa-volume-high"></i></button>
-          <button class="btn-quick-add" onclick="toggleInlineAdd('p1')" title="Add Task"><i class="fa-solid fa-plus"></i></button>
+          <button onclick="speakQuadrant('p1')" title="Listen"><i class="fa-solid fa-volume-high"></i></button>
+          <button onclick="toggleInlineAdd('p1')" title="Add Task"><i class="fa-solid fa-plus"></i></button>
         </div>
       </div>
       <div class="inline-add-bar" id="addBar-p1">
@@ -509,7 +496,7 @@
       <div class="task-list" id="list-p1"></div>
     </div>
 
-    <!-- P2: Important & Not Urgent -->
+    <!-- P2 -->
     <div class="quadrant p2" data-quad="p2">
       <div class="quad-header">
         <div class="quad-title">
@@ -517,8 +504,8 @@
           <span>Important & Not Urgent</span>
         </div>
         <div class="quad-tools">
-          <button class="btn-speech" onclick="speakQuadrant('p2')" title="Read P2"><i class="fa-solid fa-volume-high"></i></button>
-          <button class="btn-quick-add" onclick="toggleInlineAdd('p2')" title="Add Task"><i class="fa-solid fa-plus"></i></button>
+          <button onclick="speakQuadrant('p2')" title="Listen"><i class="fa-solid fa-volume-high"></i></button>
+          <button onclick="toggleInlineAdd('p2')" title="Add Task"><i class="fa-solid fa-plus"></i></button>
         </div>
       </div>
       <div class="inline-add-bar" id="addBar-p2">
@@ -528,7 +515,7 @@
       <div class="task-list" id="list-p2"></div>
     </div>
 
-    <!-- P3: Not Important & Urgent -->
+    <!-- P3 -->
     <div class="quadrant p3" data-quad="p3">
       <div class="quad-header">
         <div class="quad-title">
@@ -536,8 +523,8 @@
           <span>Not Important & Urgent</span>
         </div>
         <div class="quad-tools">
-          <button class="btn-speech" onclick="speakQuadrant('p3')" title="Read P3"><i class="fa-solid fa-volume-high"></i></button>
-          <button class="btn-quick-add" onclick="toggleInlineAdd('p3')" title="Add Task"><i class="fa-solid fa-plus"></i></button>
+          <button onclick="speakQuadrant('p3')" title="Listen"><i class="fa-solid fa-volume-high"></i></button>
+          <button onclick="toggleInlineAdd('p3')" title="Add Task"><i class="fa-solid fa-plus"></i></button>
         </div>
       </div>
       <div class="inline-add-bar" id="addBar-p3">
@@ -547,7 +534,7 @@
       <div class="task-list" id="list-p3"></div>
     </div>
 
-    <!-- P4: Not Important & Not Urgent -->
+    <!-- P4 -->
     <div class="quadrant p4" data-quad="p4">
       <div class="quad-header">
         <div class="quad-title">
@@ -555,8 +542,8 @@
           <span>Not Important & Not Urgent</span>
         </div>
         <div class="quad-tools">
-          <button class="btn-speech" onclick="speakQuadrant('p4')" title="Read P4"><i class="fa-solid fa-volume-high"></i></button>
-          <button class="btn-quick-add" onclick="toggleInlineAdd('p4')" title="Add Task"><i class="fa-solid fa-plus"></i></button>
+          <button onclick="speakQuadrant('p4')" title="Listen"><i class="fa-solid fa-volume-high"></i></button>
+          <button onclick="toggleInlineAdd('p4')" title="Add Task"><i class="fa-solid fa-plus"></i></button>
         </div>
       </div>
       <div class="inline-add-bar" id="addBar-p4">
@@ -567,41 +554,73 @@
     </div>
   </main>
 
+  <!-- GitHub Setup Vault Modal -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-box">
+      <div class="modal-title">
+        <span>GitHub Live Sync Vault</span>
+        <button class="modal-close" onclick="closeModal('settingsModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- Step 1: Master Password Authentication -->
+      <div id="vaultAuthStep">
+        <div class="form-group">
+          <label>Enter Master Password</label>
+          <input type="password" id="vaultAuthPass" placeholder="Master Password" autocomplete="off">
+        </div>
+        <button class="btn-primary" style="margin-top:10px;" onclick="verifyMasterPass()"><i class="fa-solid fa-lock-open"></i> Unlock Vault</button>
+      </div>
+
+      <!-- Step 2: Hidden Config Details -->
+      <div id="vaultConfigStep" style="display:none; flex-direction:column; gap:10px;">
+        <div class="form-group">
+          <label>GitHub Personal Access Token (PAT)</label>
+          <input type="password" id="vaultToken" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>Repository (Owner/Repo)</label>
+          <input type="text" id="vaultRepo" value="TechIsInMyDNA/My-Eisenhower-Matrix">
+        </div>
+        <button class="btn-primary" onclick="saveVaultConfig()"><i class="fa-solid fa-floppy-disk"></i> Save & Connect Live</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Backup & Restore Modal -->
   <div class="modal-overlay" id="backupModal">
     <div class="modal-box">
       <div class="modal-title">
-        <span>Backup & Restore (No Data Loss)</span>
+        <span>Backup & Restore</span>
         <button class="modal-close" onclick="closeModal('backupModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
       
-      <p style="font-size:0.8rem; color:#94a3b8;">
-        Export current tasks & history to JSON file, or restore directly from your backup file.
+      <p style="font-size:0.75rem; color:#94a3b8;">
+        Export current tasks & completed history to a JSON backup file, or restore with 0 data loss.
       </p>
 
       <button class="btn-primary" onclick="exportBackup()"><i class="fa-solid fa-download"></i> Download Full Backup (.json)</button>
       
-      <div style="border-top:1px solid var(--border-color); margin: 6px 0;"></div>
+      <div style="border-top:1px solid var(--border-color); margin: 4px 0;"></div>
 
       <div class="form-group">
-        <label>Restore from Backup JSON File:</label>
+        <label>Select Backup JSON File to Restore:</label>
         <input type="file" id="importFileInput" accept=".json">
       </div>
-      <button class="btn-secondary" onclick="importBackup()"><i class="fa-solid fa-upload"></i> Restore Data</button>
+      <button class="btn-secondary" onclick="importBackup()"><i class="fa-solid fa-upload"></i> Restore from JSON</button>
     </div>
   </div>
 
-  <!-- Task Detail & Reminder Modal -->
+  <!-- Task Detail / Reminder Modal -->
   <div class="modal-overlay" id="reminderModal">
     <div class="modal-box">
       <div class="modal-title">
-        <span>Task & Reminder Alert</span>
+        <span>Edit Task & Reminder</span>
         <button class="modal-close" onclick="closeModal('reminderModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
       <div class="form-group">
-        <label>Task Content</label>
-        <textarea id="editTaskText"></textarea>
+        <label>Task Description</label>
+        <textarea id="editTaskText" rows="3"></textarea>
       </div>
 
       <div class="form-group">
@@ -619,48 +638,25 @@
         <input type="datetime-local" id="editTaskReminder">
       </div>
 
-      <div style="display:flex; justify-content:space-between; gap:10px; margin-top:8px;">
+      <div style="display:flex; justify-content:space-between; gap:8px; margin-top:6px;">
         <button class="btn-secondary" style="background:#ef4444;" onclick="deleteCurrentTask()"><i class="fa-solid fa-trash"></i> Delete</button>
-        <button class="btn-primary" onclick="saveTaskModal()"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+        <button class="btn-primary" onclick="saveTaskModal()"><i class="fa-solid fa-check"></i> Save</button>
       </div>
     </div>
   </div>
 
-  <!-- History Drawer Modal -->
+  <!-- Completed Tasks History Modal -->
   <div class="modal-overlay" id="historyModal">
     <div class="modal-box">
       <div class="modal-title">
         <span>Completed Tasks History</span>
         <button class="modal-close" onclick="closeModal('historyModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <div id="historyListContainer" style="display:flex; flex-direction:column; gap:8px; max-height:55vh; overflow-y:auto;"></div>
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-        <button class="btn-secondary" onclick="clearAllHistory()" style="background:#ef4444;">Clear History</button>
+      <div id="historyListContainer" style="display:flex; flex-direction:column; gap:6px; max-height:55vh; overflow-y:auto;"></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+        <button class="btn-secondary" onclick="clearAllHistory()" style="background:#ef4444;">Clear All</button>
         <button class="btn-secondary" onclick="closeModal('historyModal')">Close</button>
       </div>
-    </div>
-  </div>
-
-  <!-- GitHub Settings Modal -->
-  <div class="modal-overlay" id="settingsModal">
-    <div class="modal-box">
-      <div class="modal-title">
-        <span>GitHub Live Sync Vault</span>
-        <button class="modal-close" onclick="closeModal('settingsModal')"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="form-group">
-        <label>Master Password</label>
-        <input type="password" id="vaultPass" placeholder="Enter Shubham@144">
-      </div>
-      <div class="form-group">
-        <label>GitHub Personal Access Token (PAT)</label>
-        <input type="password" id="vaultToken" placeholder="ghp_xxx">
-      </div>
-      <div class="form-group">
-        <label>Repository (Owner/Repo)</label>
-        <input type="text" id="vaultRepo" value="TechIsInMyDNA/My-Eisenhower-Matrix">
-      </div>
-      <button class="btn-primary" onclick="saveVaultSettings()">Unlock & Save</button>
     </div>
   </div>
 
@@ -676,12 +672,12 @@
       activeTaskId: null
     };
 
-    // Check URL parameters for widget mode
+    // Auto-detect Widget parameter
     if (new URLSearchParams(window.location.search).get('view') === 'widget') {
       document.body.classList.add('widget-mode');
     }
 
-    // Audio Chime for Reminder
+    // Audio chime for alerts
     function playChime() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -690,23 +686,19 @@
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.type = "sine";
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2); // A5
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2);
         gain.gain.setValueAtTime(0.3, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
         osc.start();
         osc.stop(ctx.currentTime + 0.6);
-      } catch (e) {
-        console.warn("Audio Context blocked");
-      }
+      } catch (e) {}
     }
 
-    // Request Notification permission
     if ("Notification" in window && Notification.permission !== "granted") {
       Notification.requestPermission();
     }
 
-    // Local Storage Loading
     function loadLocal() {
       const localData = localStorage.getItem("sgm_eisenhower_data");
       if (localData) {
@@ -714,9 +706,7 @@
           const parsed = JSON.parse(localData);
           state.tasks = parsed.tasks || [];
           state.history = parsed.history || [];
-        } catch(e) {
-          console.error(e);
-        }
+        } catch(e) {}
       }
       renderMatrix();
     }
@@ -729,7 +719,7 @@
       renderMatrix();
     }
 
-    // Render 4 Quadrants
+    // Render Matrix
     function renderMatrix() {
       ['p1', 'p2', 'p3', 'p4'].forEach(quad => {
         const container = document.getElementById(`list-${quad}`);
@@ -758,7 +748,7 @@
               <span class="task-text" onclick="openEditModal('${task.id}')">${task.text}</span>
             </div>
             <div class="task-meta">
-              <span class="meta-time">${task.createdAt || ''}</span>
+              <span>${task.createdAt || ''}</span>
               ${reminderHtml}
             </div>
           `;
@@ -767,7 +757,7 @@
       });
     }
 
-    // Inline Add Handling
+    // Inline Add Controls
     function toggleInlineAdd(quad) {
       const bar = document.getElementById(`addBar-${quad}`);
       bar.classList.toggle('active');
@@ -788,22 +778,21 @@
       const now = new Date();
       const timeStr = now.toLocaleDateString([], {day:'2-digit', month:'short'}) + " " + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 
-      const newTask = {
+      state.tasks.unshift({
         id: "task_" + Date.now(),
         text: text,
         quadrant: quad,
         createdAt: timeStr,
         reminder: null,
         completed: false
-      };
+      });
 
-      state.tasks.unshift(newTask);
       input.value = "";
       saveLocal();
       triggerDebouncedSync();
     }
 
-    // Complete Task with Strikethrough Animation
+    // Complete Task
     function completeTask(id) {
       const card = document.getElementById(`card-${id}`);
       if (card) {
@@ -821,14 +810,14 @@
           saveLocal();
           triggerDebouncedSync();
         }
-      }, 350);
+      }, 300);
     }
 
-    // Modal Helpers
+    // Modal Utilities
     function openModal(id) { document.getElementById(id).classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-    // Edit & Reminder Modal
+    // Task & Reminder Modal
     function openEditModal(id) {
       const task = state.tasks.find(t => t.id === id);
       if (!task) return;
@@ -858,12 +847,12 @@
       closeModal('reminderModal');
     }
 
-    // History Modal
+    // History Modal Handlers
     document.getElementById('btnHistory').onclick = () => {
       const container = document.getElementById('historyListContainer');
       container.innerHTML = "";
       if (state.history.length === 0) {
-        container.innerHTML = "<div style='color:#94a3b8; text-align:center; padding:10px;'>No completed tasks</div>";
+        container.innerHTML = "<div style='color:#94a3b8; text-align:center; padding:10px; font-size:0.8rem;'>No completed tasks</div>";
       } else {
         state.history.forEach(item => {
           const div = document.createElement("div");
@@ -894,7 +883,7 @@
     }
 
     function clearAllHistory() {
-      if (confirm("Clear all completed task history?")) {
+      if (confirm("Clear all completed tasks from history?")) {
         state.history = [];
         saveLocal();
         triggerDebouncedSync();
@@ -902,7 +891,7 @@
       }
     }
 
-    // Export & Import Backup (No Data Loss)
+    // Backup & Restore
     document.getElementById('btnBackup').onclick = () => openModal('backupModal');
 
     function exportBackup() {
@@ -911,18 +900,18 @@
         history: state.history,
         exportedAt: new Date().toISOString()
       }, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", `Eisenhower_Backup_${Date.now()}.json`);
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
+      const a = document.createElement('a');
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", `Eisenhower_Backup_${Date.now()}.json`);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
     }
 
     function importBackup() {
       const fileInput = document.getElementById('importFileInput');
       if (!fileInput.files.length) {
-        alert("Please select a JSON file to restore");
+        alert("Please select a JSON backup file");
         return;
       }
       const reader = new FileReader();
@@ -934,23 +923,23 @@
             state.history = data.history || [];
             saveLocal();
             triggerDebouncedSync();
-            alert("Backup restored successfully!");
+            alert("All tasks and history restored successfully!");
             closeModal('backupModal');
           } else {
-            alert("Invalid backup JSON format");
+            alert("Invalid backup file format");
           }
         } catch (err) {
-          alert("Error parsing JSON file: " + err.message);
+          alert("Error parsing file: " + err.message);
         }
       };
       reader.readAsText(fileInput.files[0]);
     }
 
-    // Read Quadrant Tasks (Speech Synthesis)
+    // Speech Reader
     function speakQuadrant(quad) {
       const list = state.tasks.filter(t => t.quadrant === quad);
       if (list.length === 0) {
-        window.speechSynthesis.speak(new SpeechSynthesisUtterance("No tasks in this quadrant"));
+        window.speechSynthesis.speak(new SpeechSynthesisUtterance("No tasks in " + quad.toUpperCase()));
         return;
       }
       const textToSpeak = quad.toUpperCase() + ": " + list.map((t, idx) => `${idx + 1}. ${t.text}`).join(". ");
@@ -960,25 +949,43 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    // Toggle Widget View
+    // Widget Toggle Button
     document.getElementById('btnWidgetToggle').onclick = () => {
       document.body.classList.toggle('widget-mode');
     };
 
-    // GitHub Settings & Vault
-    document.getElementById('btnSettings').onclick = () => openModal('settingsModal');
+    // GitHub Settings with Master Password Vault Protection
+    document.getElementById('btnSettings').onclick = () => {
+      document.getElementById('vaultAuthStep').style.display = "block";
+      document.getElementById('vaultConfigStep').style.display = "none";
+      document.getElementById('vaultAuthPass').value = "";
+      openModal('settingsModal');
+    };
 
-    function saveVaultSettings() {
-      const pass = document.getElementById('vaultPass').value;
+    function verifyMasterPass() {
+      const pass = document.getElementById('vaultAuthPass').value;
       if (pass !== MASTER_PASS) {
         alert("Incorrect Master Password");
         return;
       }
+      document.getElementById('vaultAuthStep').style.display = "none";
+      document.getElementById('vaultConfigStep').style.display = "flex";
+      
+      const savedToken = localStorage.getItem("gh_pat_vault");
+      if (savedToken) {
+        document.getElementById('vaultToken').value = atob(savedToken);
+      }
+      document.getElementById('vaultRepo').value = localStorage.getItem("gh_repo_vault") || GITHUB_REPO_DEFAULT;
+    }
+
+    function saveVaultConfig() {
       const token = document.getElementById('vaultToken').value.trim();
       const repo = document.getElementById('vaultRepo').value.trim() || GITHUB_REPO_DEFAULT;
+
       if (token) localStorage.setItem("gh_pat_vault", btoa(token));
       localStorage.setItem("gh_repo_vault", repo);
-      alert("Settings saved!");
+
+      alert("GitHub Vault unlocked & configuration saved!");
       closeModal('settingsModal');
       syncFromGitHub();
     }
@@ -992,7 +999,7 @@
       return localStorage.getItem("gh_repo_vault") || GITHUB_REPO_DEFAULT;
     }
 
-    // Background GitHub Sync
+    // Sync Engine
     async function syncFromGitHub() {
       const token = getGitHubToken();
       const repo = getGitHubRepo();
@@ -1034,7 +1041,6 @@
           text.innerText = "Error";
         }
       } catch (err) {
-        console.error(err);
         dot.className = "status-dot error";
         text.innerText = "Offline";
       }
@@ -1057,7 +1063,7 @@
       };
 
       const bodyData = {
-        message: "Update tasks via Eisenhower Matrix App",
+        message: "Update tasks via My Eisenhower Matrix",
         content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))))
       };
       if (state.sha) bodyData.sha = state.sha;
@@ -1088,15 +1094,15 @@
       }
     }
 
-    let syncTimeout = null;
+    let syncTimer = null;
     function triggerDebouncedSync() {
-      clearTimeout(syncTimeout);
-      syncTimeout = setTimeout(pushToGitHub, 1200);
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(pushToGitHub, 1200);
     }
 
     document.getElementById('btnSyncNow').onclick = () => syncFromGitHub();
 
-    // Reminder Checker Worker Loop (Every 30s)
+    // Reminder Checker (Every 30s)
     setInterval(() => {
       const now = new Date();
       state.tasks.forEach(t => {
@@ -1119,7 +1125,7 @@
       });
     }, 30000);
 
-    // Initial Load & Auto Poll Sync
+    // Initial load
     loadLocal();
     syncFromGitHub();
     setInterval(syncFromGitHub, 20000);
