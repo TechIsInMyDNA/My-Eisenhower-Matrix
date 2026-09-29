@@ -1,14 +1,6 @@
 {
   "tasks": [
     {
-      "id": "task_1790714187222",
-      "text": "Hhhvg",
-      "quadrant": "p1",
-      "createdAt": "30 Sept 02:06",
-      "reminder": null,
-      "completed": false
-    },
-    {
       "id": "task_p1_1",
       "text": "Kal chuhe ki liye jordar trap ek",
       "quadrant": "p1",
@@ -171,6 +163,15 @@
   ],
   "history": [
     {
+      "id": "task_1790714187222",
+      "text": "Hhhvg",
+      "quadrant": "p1",
+      "createdAt": "30 Sept 02:06",
+      "reminder": null,
+      "completed": true,
+      "completedAt": "30/09/2026, 02:09:47"
+    },
+    {
       "id": "task_1790713726564",
       "text": "Test",
       "quadrant": "p1",
@@ -225,5 +226,5 @@
       "completedAt": "30/09/2026, 01:54:56"
     }
   ],
-  "updatedAt": "2026-09-29T20:36:27.325Z"
+  "updatedAt": "2026-09-29T20:39:47.877Z"
 }
