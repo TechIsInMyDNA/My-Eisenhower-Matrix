@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>My Eisenhower Matrix</title>
+  
+  <!-- PWA Web Manifest (Inline Blob Ready) -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#070d19">
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
@@ -11,26 +18,22 @@
       --card-bg: #0f172a;
       --border-subtle: #1e293b;
       
-      /* Vibrant Pastel Themes */
+      /* Distinct Quadrant Pastel Shades */
       --p1-header: #fef08a;
       --p1-text: #713f12;
       --p1-border: #eab308;
-      --p1-chip: #fef9c3;
 
       --p2-header: #fecdd3;
       --p2-text: #881337;
       --p2-border: #f43f5e;
-      --p2-chip: #ffe4e6;
 
       --p3-header: #cffafe;
       --p3-text: #164e63;
       --p3-border: #0ea5e9;
-      --p3-chip: #e0f2fe;
 
       --p4-header: #bbf7d0;
       --p4-text: #14532d;
       --p4-border: #22c55e;
-      --p4-chip: #dcfce7;
     }
 
     * {
@@ -38,14 +41,13 @@
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
 
     body {
       background-color: var(--bg-dark);
       color: #f8fafc;
-      height: 100vh;
+      height: 100dvh;
       width: 100vw;
       display: flex;
       flex-direction: column;
@@ -55,26 +57,26 @@
     /* Top Sleek Header */
     header {
       background: #0b1324;
-      padding: 8px 12px;
+      padding: 6px 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid var(--border-subtle);
-      min-height: 48px;
+      min-height: 46px;
       flex-shrink: 0;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 0.95rem;
+      gap: 7px;
+      font-size: 0.92rem;
       font-weight: 700;
     }
 
     .brand i {
       color: #38bdf8;
-      font-size: 1.15rem;
+      font-size: 1.1rem;
     }
 
     .header-actions {
@@ -87,8 +89,8 @@
       display: flex;
       align-items: center;
       gap: 5px;
-      font-size: 0.72rem;
-      padding: 4px 8px;
+      font-size: 0.7rem;
+      padding: 3px 7px;
       border-radius: 20px;
       background: #111c33;
       border: 1px solid #1e293b;
@@ -112,39 +114,40 @@
       color: #cbd5e1;
       border: 1px solid #1e293b;
       border-radius: 6px;
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
     }
 
     .btn-icon:active {
-      transform: scale(0.9);
+      transform: scale(0.92);
       background: #1e293b;
     }
 
-    /* 2x2 Matrix Container - Perfectly Screen Fitted */
+    /* 2x2 Matrix Container */
     .matrix-grid {
       flex: 1;
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: 1fr 1fr;
-      gap: 6px;
-      padding: 6px;
-      overflow: hidden;
+      gap: 5px;
+      padding: 5px;
+      min-height: 0;
       background: var(--bg-dark);
     }
 
     .quadrant {
-      border-radius: 12px;
+      border-radius: 10px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
       border: 1.5px solid;
       background: var(--card-bg);
+      min-height: 0;
       position: relative;
     }
 
@@ -161,19 +164,23 @@
     .quadrant.p4 .quad-header { background: var(--p4-header); color: var(--p4-text); }
 
     .quad-header {
-      padding: 6px 8px;
+      padding: 5px 8px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-weight: 700;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       flex-shrink: 0;
+      user-select: none;
     }
 
     .quad-title {
       display: flex;
       align-items: center;
       gap: 5px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
     .priority-badge {
@@ -182,32 +189,35 @@
       border-radius: 4px;
       background: rgba(0, 0, 0, 0.15);
       font-weight: 800;
+      flex-shrink: 0;
     }
 
     .quad-tools {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
+      flex-shrink: 0;
     }
 
     .quad-tools button {
       background: none;
       border: none;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       cursor: pointer;
       color: inherit;
       display: flex;
       align-items: center;
     }
 
-    /* Fast Inline Add Input */
+    /* Fixed Inline Add Bar: No Cut-off */
     .inline-add-bar {
       display: none;
-      padding: 5px 6px;
+      padding: 4px;
       background: #111c33;
       border-bottom: 1px solid #1e293b;
-      gap: 5px;
+      gap: 4px;
       flex-shrink: 0;
+      align-items: center;
     }
 
     .inline-add-bar.active {
@@ -216,46 +226,48 @@
 
     .inline-add-bar input {
       flex: 1;
+      min-width: 0; /* Prevents input from pushing button outside */
       background: #070d19;
       border: 1px solid #334155;
       color: #fff;
-      padding: 5px 8px;
-      border-radius: 5px;
+      padding: 4px 6px;
+      border-radius: 4px;
       font-size: 0.75rem;
       outline: none;
-      user-select: text;
     }
 
     .inline-add-bar button {
       background: #2563eb;
       border: none;
       color: white;
-      padding: 0 10px;
-      border-radius: 5px;
-      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
       font-weight: 600;
       cursor: pointer;
+      flex-shrink: 0;
     }
 
-    /* Task Items Scroll Area */
+    /* Tasks Scroll Container */
     .task-list {
       flex: 1;
       overflow-y: auto;
-      padding: 6px;
+      padding: 4px;
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 4px;
+      min-height: 0;
     }
 
     .task-card {
       background: #152238;
       border: 1px solid #1e293b;
-      padding: 6px 8px;
-      border-radius: 7px;
+      padding: 5px 6px;
+      border-radius: 6px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      transition: all 0.22s ease;
+      gap: 3px;
+      transition: all 0.2s ease;
       position: relative;
     }
 
@@ -267,36 +279,35 @@
     .task-main {
       display: flex;
       align-items: flex-start;
-      gap: 7px;
+      gap: 6px;
     }
 
     .task-checkbox {
       margin-top: 2px;
       cursor: pointer;
       accent-color: #38bdf8;
-      width: 16px;
-      height: 16px;
+      width: 15px;
+      height: 15px;
       flex-shrink: 0;
     }
 
     .task-text {
       flex: 1;
-      font-size: 0.78rem;
-      line-height: 1.3;
+      font-size: 0.76rem;
+      line-height: 1.25;
       color: #f1f5f9;
       font-weight: 500;
       word-break: break-word;
       cursor: pointer;
-      user-select: text;
     }
 
     .task-meta {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       color: #94a3b8;
-      margin-left: 23px;
+      margin-left: 21px;
     }
 
     .reminder-badge {
@@ -304,7 +315,7 @@
       align-items: center;
       gap: 3px;
       background: rgba(255, 255, 255, 0.08);
-      padding: 1px 5px;
+      padding: 1px 4px;
       border-radius: 4px;
       font-weight: 600;
       cursor: pointer;
@@ -315,11 +326,11 @@
       color: #fff;
     }
 
-    /* Modal Layer */
+    /* Modals */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.82);
       backdrop-filter: blur(4px);
       z-index: 100;
       display: none;
@@ -335,18 +346,18 @@
       border: 1px solid #334155;
       border-radius: 10px;
       width: 100%;
-      max-width: 420px;
+      max-width: 400px;
       max-height: 85vh;
       overflow-y: auto;
-      padding: 16px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     }
 
     .modal-title {
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 700;
       display: flex;
       justify-content: space-between;
@@ -364,11 +375,11 @@
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 4px;
     }
 
     .form-group label {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: #94a3b8;
     }
 
@@ -376,18 +387,17 @@
       background: #070d19;
       border: 1px solid #334155;
       color: #fff;
-      padding: 8px 10px;
+      padding: 7px 9px;
       border-radius: 6px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       outline: none;
-      user-select: text;
     }
 
     .btn-primary {
       background: #2563eb;
       color: white;
       border: none;
-      padding: 9px;
+      padding: 8px;
       border-radius: 6px;
       font-weight: 600;
       cursor: pointer;
@@ -395,23 +405,23 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
     }
 
     .btn-secondary {
       background: #1e293b;
       color: white;
       border: 1px solid #334155;
-      padding: 8px 10px;
+      padding: 7px 9px;
       border-radius: 6px;
-      font-size: 0.78rem;
+      font-size: 0.74rem;
       cursor: pointer;
     }
 
     .history-item {
       background: #070d19;
       border: 1px solid #1e293b;
-      padding: 7px 10px;
+      padding: 6px 8px;
       border-radius: 6px;
       display: flex;
       justify-content: space-between;
@@ -420,35 +430,24 @@
     }
 
     .history-item .hist-text {
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       text-decoration: line-through;
       color: #94a3b8;
       flex: 1;
-      user-select: text;
     }
 
     .history-item .hist-meta {
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       color: #64748b;
     }
 
-    /* PURE HOMESCREEN WIDGET MODE (?view=widget) */
+    /* Homescreen Standalone View (?view=widget) */
     body.widget-mode header {
       display: none !important;
     }
     body.widget-mode .matrix-grid {
       padding: 2px !important;
-      gap: 4px !important;
-    }
-    body.widget-mode .quad-header {
-      padding: 4px 6px !important;
-      font-size: 0.76rem !important;
-    }
-    body.widget-mode .task-card {
-      padding: 5px 6px !important;
-    }
-    body.widget-mode .task-text {
-      font-size: 0.75rem !important;
+      gap: 3px !important;
     }
   </style>
 </head>
@@ -468,9 +467,9 @@
       </div>
 
       <button class="btn-icon" id="btnSyncNow" title="Sync Live"><i class="fa-solid fa-rotate"></i></button>
+      <button class="btn-icon" id="btnPinWidget" title="Pin to Homescreen"><i class="fa-solid fa-arrow-down-to-square"></i></button>
       <button class="btn-icon" id="btnHistory" title="History"><i class="fa-solid fa-clock-rotate-left"></i></button>
       <button class="btn-icon" id="btnBackup" title="Backup & Restore"><i class="fa-solid fa-database"></i></button>
-      <button class="btn-icon" id="btnWidgetToggle" title="Widget View Toggle"><i class="fa-solid fa-table-cells-large"></i></button>
       <button class="btn-icon" id="btnSettings" title="GitHub Vault"><i class="fa-solid fa-gear"></i></button>
     </div>
   </header>
@@ -567,10 +566,10 @@
           <label>Master Password</label>
           <input type="password" id="vaultAuthPass" placeholder="Enter Shubham@144" autocomplete="off">
         </div>
-        <button class="btn-primary" style="margin-top:10px;" onclick="verifyMasterPass()"><i class="fa-solid fa-unlock"></i> Unlock Vault</button>
+        <button class="btn-primary" style="margin-top:8px;" onclick="verifyMasterPass()"><i class="fa-solid fa-unlock"></i> Unlock Vault</button>
       </div>
 
-      <div id="vaultConfigStep" style="display:none; flex-direction:column; gap:10px;">
+      <div id="vaultConfigStep" style="display:none; flex-direction:column; gap:8px;">
         <div class="form-group">
           <label>GitHub Personal Access Token (PAT)</label>
           <input type="password" id="vaultToken" placeholder="ghp_xxx" autocomplete="off">
@@ -591,11 +590,11 @@
         <span>Backup & Restore</span>
         <button class="modal-close" onclick="closeModal('backupModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <p style="font-size:0.75rem; color:#94a3b8;">
-        Export current tasks & completed history to a JSON backup file, or restore anytime.
+      <p style="font-size:0.72rem; color:#94a3b8;">
+        Full tasks and completed history export/import with 0 data loss.
       </p>
       <button class="btn-primary" onclick="exportBackup()"><i class="fa-solid fa-download"></i> Download Full Backup (.json)</button>
-      <div style="border-top:1px solid #1e293b; margin: 4px 0;"></div>
+      <div style="border-top:1px solid #1e293b; margin: 3px 0;"></div>
       <div class="form-group">
         <label>Select Backup JSON File to Restore:</label>
         <input type="file" id="importFileInput" accept=".json">
@@ -628,7 +627,7 @@
         <label>Optional Reminder (Date & Time)</label>
         <input type="datetime-local" id="editTaskReminder">
       </div>
-      <div style="display:flex; justify-content:space-between; gap:8px; margin-top:6px;">
+      <div style="display:flex; justify-content:space-between; gap:6px; margin-top:4px;">
         <button class="btn-secondary" style="background:#ef4444;" onclick="deleteCurrentTask()"><i class="fa-solid fa-trash"></i> Delete</button>
         <button class="btn-primary" onclick="saveTaskModal()"><i class="fa-solid fa-check"></i> Save</button>
       </div>
@@ -642,8 +641,8 @@
         <span>Completed Tasks History</span>
         <button class="modal-close" onclick="closeModal('historyModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <div id="historyListContainer" style="display:flex; flex-direction:column; gap:6px; max-height:55vh; overflow-y:auto;"></div>
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+      <div id="historyListContainer" style="display:flex; flex-direction:column; gap:5px; max-height:55vh; overflow-y:auto;"></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
         <button class="btn-secondary" onclick="clearAllHistory()" style="background:#ef4444;">Clear All</button>
         <button class="btn-secondary" onclick="closeModal('historyModal')">Close</button>
       </div>
@@ -662,11 +661,42 @@
       activeTaskId: null
     };
 
-    // Auto-switch to widget view if URL contains view=widget
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('view') === 'widget') {
+    // Auto-detect widget parameter
+    if (new URLSearchParams(window.location.search).get('view') === 'widget') {
       document.body.classList.add('widget-mode');
     }
+
+    // PWA Manifest Dynamic Registration
+    const manifestBlob = new Blob([JSON.stringify({
+      name: "My Eisenhower Matrix",
+      short_name: "Matrix",
+      start_url: window.location.href.split('?')[0] + "?view=widget",
+      display: "standalone",
+      background_color: "#070d19",
+      theme_color: "#070d19"
+    })], {type: 'application/json'});
+    const manifestURL = URL.createObjectURL(manifestBlob);
+    const linkEl = document.createElement('link');
+    linkEl.rel = 'manifest';
+    linkEl.href = manifestURL;
+    document.head.appendChild(linkEl);
+
+    // Install prompt handler
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+
+    document.getElementById('btnPinWidget').onclick = async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') deferredPrompt = null;
+      } else {
+        alert("Homescreen par widget bananey ke liye Browser menu (3 dots) me jakar 'Install App' ya 'Add to Home screen' select karein!");
+      }
+    };
 
     // Audio chime player
     function playChime() {
@@ -800,7 +830,7 @@
           saveLocal();
           triggerDebouncedSync();
         }
-      }, 260);
+      }, 240);
     }
 
     // Modals
@@ -841,7 +871,7 @@
       const container = document.getElementById('historyListContainer');
       container.innerHTML = "";
       if (state.history.length === 0) {
-        container.innerHTML = "<div style='color:#94a3b8; text-align:center; padding:10px;'>No completed tasks</div>";
+        container.innerHTML = "<div style='color:#94a3b8; text-align:center; padding:10px; font-size:0.75rem;'>No completed tasks</div>";
       } else {
         state.history.forEach(item => {
           const div = document.createElement("div");
@@ -912,7 +942,7 @@
             state.history = data.history || [];
             saveLocal();
             triggerDebouncedSync();
-            alert("Backup restored successfully!");
+            alert("All tasks and history restored successfully!");
             closeModal('backupModal');
           } else {
             alert("Invalid backup file format");
@@ -937,11 +967,6 @@
       window.speechSynthesis.cancel();
       window.speechSynthesis.speak(utterance);
     }
-
-    // Toggle Widget View
-    document.getElementById('btnWidgetToggle').onclick = () => {
-      document.body.classList.toggle('widget-mode');
-    };
 
     // GitHub Settings with Master Password Vault
     document.getElementById('btnSettings').onclick = () => {
@@ -988,7 +1013,7 @@
       return localStorage.getItem("gh_repo_vault") || GITHUB_REPO_DEFAULT;
     }
 
-    // Sync Engine
+    // GitHub Live Sync Engine
     async function syncFromGitHub() {
       const token = getGitHubToken();
       const repo = getGitHubRepo();
@@ -1091,7 +1116,7 @@
 
     document.getElementById('btnSyncNow').onclick = () => syncFromGitHub();
 
-    // Reminder Loop (Every 30s)
+    // Reminder Checker Loop (Every 30s)
     setInterval(() => {
       const now = new Date();
       state.tasks.forEach(t => {
