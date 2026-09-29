@@ -259,7 +259,7 @@
       display: flex;
       flex-direction: column;
       gap: 3px;
-      transition: opacity 0.15s ease, transform 0.15s ease;
+      transition: opacity 0.12s ease, transform 0.12s ease;
       position: relative;
     }
 
@@ -543,10 +543,11 @@
         <button class="modal-close" onclick="closeModal('settingsModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
+      <!-- Auth Screen: Strictly Blank, No Pre-filled Values -->
       <div id="vaultAuthStep">
         <div class="form-group">
           <label>Master Password</label>
-          <input type="password" id="vaultAuthPass" placeholder="Enter Shubham@144" autocomplete="off">
+          <input type="password" id="vaultAuthPass" placeholder="Enter Master Password" value="" autocomplete="new-password">
         </div>
         <button class="btn-primary" style="margin-top:8px;" onclick="verifyMasterPass()"><i class="fa-solid fa-unlock"></i> Unlock Vault</button>
       </div>
@@ -554,7 +555,7 @@
       <div id="vaultConfigStep" style="display:none; flex-direction:column; gap:8px;">
         <div class="form-group">
           <label>GitHub Personal Access Token (PAT)</label>
-          <input type="password" id="vaultToken" placeholder="ghp_xxx" autocomplete="off">
+          <input type="password" id="vaultToken" placeholder="ghp_xxx" autocomplete="new-password">
         </div>
         <div class="form-group">
           <label>Repository (Owner/Repo)</label>
@@ -730,7 +731,33 @@
         tasks: state.tasks,
         history: state.history
       }));
-      renderMatrix();
+    }
+
+    function createTaskCardDOM(task) {
+      const card = document.createElement("div");
+      card.className = "task-card";
+      card.id = `card-${task.id}`;
+
+      let reminderHtml = "";
+      if (task.reminder) {
+        const isOverdue = new Date(task.reminder) < new Date();
+        const timeStr = new Date(task.reminder).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        reminderHtml = `<span class="reminder-badge ${isOverdue ? 'overdue' : ''}" onclick="openEditModal('${task.id}')">
+          <i class="fa-regular fa-bell"></i> ${timeStr}
+        </span>`;
+      }
+
+      card.innerHTML = `
+        <div class="task-main">
+          <input type="checkbox" class="task-checkbox" onchange="completeTask('${task.id}')">
+          <span class="task-text" onclick="openEditModal('${task.id}')">${task.text}</span>
+        </div>
+        <div class="task-meta">
+          <span>${task.createdAt || ''}</span>
+          ${reminderHtml}
+        </div>
+      `;
+      return card;
     }
 
     function renderMatrix() {
@@ -738,34 +765,9 @@
         const container = document.getElementById(`list-${quad}`);
         if (!container) return;
         container.innerHTML = "";
-
         const quadTasks = state.tasks.filter(t => t.quadrant === quad);
-
         quadTasks.forEach(task => {
-          const card = document.createElement("div");
-          card.className = "task-card";
-          card.id = `card-${task.id}`;
-
-          let reminderHtml = "";
-          if (task.reminder) {
-            const isOverdue = new Date(task.reminder) < new Date();
-            const timeStr = new Date(task.reminder).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            reminderHtml = `<span class="reminder-badge ${isOverdue ? 'overdue' : ''}" onclick="openEditModal('${task.id}')">
-              <i class="fa-regular fa-bell"></i> ${timeStr}
-            </span>`;
-          }
-
-          card.innerHTML = `
-            <div class="task-main">
-              <input type="checkbox" class="task-checkbox" onchange="completeTask('${task.id}')">
-              <span class="task-text" onclick="openEditModal('${task.id}')">${task.text}</span>
-            </div>
-            <div class="task-meta">
-              <span>${task.createdAt || ''}</span>
-              ${reminderHtml}
-            </div>
-          `;
-          container.appendChild(card);
+          container.appendChild(createTaskCardDOM(task));
         });
       });
     }
@@ -782,6 +784,7 @@
       if (e.key === "Enter") submitInlineAdd(quad);
     }
 
+    // ULTRA-FAST 0ms INSTANT TASK ADD
     function submitInlineAdd(quad) {
       const input = document.getElementById(`input-${quad}`);
       const text = input.value.trim();
@@ -790,17 +793,30 @@
       const now = new Date();
       const timeStr = now.toLocaleDateString([], {day:'2-digit', month:'short'}) + " " + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 
-      state.tasks.unshift({
+      const newTask = {
         id: "task_" + Date.now(),
         text: text,
         quadrant: quad,
         createdAt: timeStr,
         reminder: null,
         completed: false
-      });
+      };
 
+      // 1. Optimistic DOM Injection (0ms Visual Display)
+      const container = document.getElementById(`list-${quad}`);
+      if (container) {
+        container.prepend(createTaskCardDOM(newTask));
+      }
+
+      // 2. Clear input instantly
       input.value = "";
+      input.focus();
+
+      // 3. State update & Silent local save
+      state.tasks.unshift(newTask);
       saveLocal();
+
+      // 4. Fire background sync
       fastInstantSync();
     }
 
@@ -818,10 +834,11 @@
           task.completed = true;
           task.completedAt = new Date().toLocaleString();
           state.history.unshift(task);
+          if (card) card.remove();
           saveLocal();
           fastInstantSync();
         }
-      }, 140);
+      }, 100);
     }
 
     function openModal(id) { document.getElementById(id).classList.add('active'); }
@@ -844,6 +861,7 @@
         task.quadrant = document.getElementById('editTaskQuadrant').value;
         task.reminder = document.getElementById('editTaskReminder').value || null;
         saveLocal();
+        renderMatrix();
         fastInstantSync();
       }
       closeModal('reminderModal');
@@ -852,6 +870,7 @@
     function deleteCurrentTask() {
       state.tasks = state.tasks.filter(t => t.id !== state.activeTaskId);
       saveLocal();
+      renderMatrix();
       fastInstantSync();
       closeModal('reminderModal');
     }
@@ -885,6 +904,7 @@
         item.completed = false;
         state.tasks.push(item);
         saveLocal();
+        renderMatrix();
         fastInstantSync();
         document.getElementById('btnHistory').click();
       }
@@ -929,6 +949,7 @@
             state.tasks = data.tasks;
             state.history = data.history || [];
             saveLocal();
+            renderMatrix();
             fastInstantSync();
             alert("All tasks and history restored successfully!");
             closeModal('backupModal');
@@ -955,17 +976,22 @@
       window.speechSynthesis.speak(utterance);
     }
 
+    // STRICT PASSWORD BOX CLEAR (NO PRE-FILL / NO LEAK)
     document.getElementById('btnSettings').onclick = () => {
       document.getElementById('vaultAuthStep').style.display = "block";
       document.getElementById('vaultConfigStep').style.display = "none";
-      document.getElementById('vaultAuthPass').value = "";
+      const passInput = document.getElementById('vaultAuthPass');
+      passInput.value = "";
+      passInput.setAttribute("value", "");
       openModal('settingsModal');
+      setTimeout(() => { passInput.focus(); }, 150);
     };
 
     function verifyMasterPass() {
       const pass = document.getElementById('vaultAuthPass').value;
       if (pass !== MASTER_PASS) {
         alert("Incorrect Master Password");
+        document.getElementById('vaultAuthPass').value = "";
         return;
       }
       document.getElementById('vaultAuthStep').style.display = "none";
@@ -976,6 +1002,7 @@
         document.getElementById('vaultToken').value = atob(savedToken);
       }
       document.getElementById('vaultRepo').value = localStorage.getItem("gh_repo_vault") || GITHUB_REPO_DEFAULT;
+      document.getElementById('vaultAuthPass').value = "";
     }
 
     function saveVaultConfig() {
@@ -999,7 +1026,7 @@
       return localStorage.getItem("gh_repo_vault") || GITHUB_REPO_DEFAULT;
     }
 
-    // --- ULTRA-FAST DIRECT LIVE SYNC ENGINE ---
+    // ULTRA-FAST DIRECT LIVE SYNC ENGINE
     async function syncFromGitHub(force = false) {
       if (state.isPushing && !force) return;
 
@@ -1017,7 +1044,6 @@
       }
 
       try {
-        // Cache-buster timestamp ensures zero GitHub stale cache lag
         const res = await fetch(`https://api.github.com/repos/${repo}/contents/${DATA_FILE_PATH}?_t=${Date.now()}`, {
           cache: "no-store",
           headers: {
@@ -1031,13 +1057,13 @@
           state.sha = json.sha;
           const content = JSON.parse(decodeURIComponent(escape(atob(json.content))));
           if (content.tasks) {
-            // Check if server data is newer
             const localStr = JSON.stringify({ tasks: state.tasks, history: state.history });
             const remoteStr = JSON.stringify({ tasks: content.tasks, history: content.history || [] });
             if (localStr !== remoteStr) {
               state.tasks = content.tasks;
               state.history = content.history || [];
               saveLocal();
+              renderMatrix();
             }
           }
           if (dot && text) {
@@ -1099,7 +1125,6 @@
             text.innerText = "Synced";
           }
         } else if (res.status === 409) {
-          // Conflict handle: Fetch sha and retry instantly
           await syncFromGitHub(true);
         } else {
           if (dot && text) {
@@ -1117,7 +1142,6 @@
       }
     }
 
-    // 150ms Instant Action Sync
     let instantTimer = null;
     function fastInstantSync() {
       clearTimeout(instantTimer);
@@ -1129,17 +1153,15 @@
       }
       instantTimer = setTimeout(() => {
         pushToGitHub();
-      }, 150);
+      }, 100);
     }
 
-    // Fast Event Listeners
     window.addEventListener('focus', () => syncFromGitHub(true));
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') syncFromGitHub(true);
     });
     window.addEventListener('online', () => syncFromGitHub(true));
 
-    // High frequency 4-second live poll
     setInterval(() => {
       if (navigator.onLine && document.visibilityState === 'visible') {
         syncFromGitHub();
