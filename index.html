@@ -205,19 +205,26 @@
       align-items: center;
     }
 
-    .inline-add-bar {
+    /* Inline Add Bar with Optional Reminder Toggle */
+    .inline-add-container {
       display: none;
+      flex-direction: column;
       padding: 4px;
       background: #111c33;
       border-bottom: 1px solid #1e293b;
       gap: 4px;
       flex-shrink: 0;
+    }
+
+    .inline-add-container.active { display: flex; }
+
+    .inline-row-main {
+      display: flex;
+      gap: 4px;
       align-items: center;
     }
 
-    .inline-add-bar.active { display: flex; }
-
-    .inline-add-bar input {
+    .inline-row-main input[type="text"] {
       flex: 1;
       min-width: 0;
       background: #070d19;
@@ -229,7 +236,24 @@
       outline: none;
     }
 
-    .inline-add-bar button {
+    .btn-rem-toggle {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      border-radius: 4px;
+      padding: 5px 7px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .btn-rem-toggle.active {
+      color: #38bdf8;
+      border-color: #38bdf8;
+      background: #0f172a;
+    }
+
+    .inline-add-container button.btn-add-submit {
       background: #2563eb;
       border: none;
       color: white;
@@ -239,6 +263,24 @@
       font-weight: 600;
       cursor: pointer;
       flex-shrink: 0;
+    }
+
+    .inline-row-reminder {
+      display: none;
+      padding: 2px 0;
+    }
+
+    .inline-row-reminder.active { display: flex; }
+
+    .inline-row-reminder input[type="datetime-local"] {
+      width: 100%;
+      background: #070d19;
+      border: 1px solid #334155;
+      color: #38bdf8;
+      padding: 4px 6px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      outline: none;
     }
 
     .task-list {
@@ -458,11 +500,12 @@
       <button class="btn-icon" id="btnPinWidget" title="Install App to Homescreen"><i class="fa-solid fa-arrow-down-to-square"></i></button>
       <button class="btn-icon" id="btnHistory" title="History"><i class="fa-solid fa-clock-rotate-left"></i></button>
       <button class="btn-icon" id="btnBackup" title="Backup & Restore"><i class="fa-solid fa-database"></i></button>
-      <button class="btn-icon" id="btnSettings" title="GitHub Vault"><i class="fa-solid fa-gear"></i></button>
+      <button class="btn-icon" id="btnSettings" title="GitHub Vault"><i class="fa-solid fa-shield-halved"></i></button>
     </div>
   </header>
 
   <main class="matrix-grid">
+    <!-- P1 -->
     <div class="quadrant p1" data-quad="p1">
       <div class="quad-header">
         <div class="quad-title">
@@ -474,13 +517,20 @@
           <button onclick="toggleInlineAdd('p1')" title="Quick Add"><i class="fa-solid fa-plus"></i></button>
         </div>
       </div>
-      <div class="inline-add-bar" id="addBar-p1">
-        <input type="text" id="input-p1" placeholder="Add P1 task..." onkeydown="handleInlineKey(event, 'p1')">
-        <button onclick="submitInlineAdd('p1')">Add</button>
+      <div class="inline-add-container" id="addContainer-p1">
+        <div class="inline-row-main">
+          <input type="text" id="input-p1" placeholder="Add P1 task..." onkeydown="handleInlineKey(event, 'p1')">
+          <button class="btn-rem-toggle" id="remToggle-p1" onclick="toggleReminderPicker('p1')" title="Add Deadline/Reminder"><i class="fa-regular fa-bell"></i></button>
+          <button class="btn-add-submit" onclick="submitInlineAdd('p1')">Add</button>
+        </div>
+        <div class="inline-row-reminder" id="remRow-p1">
+          <input type="datetime-local" id="remInput-p1">
+        </div>
       </div>
       <div class="task-list" id="list-p1"></div>
     </div>
 
+    <!-- P2 -->
     <div class="quadrant p2" data-quad="p2">
       <div class="quad-header">
         <div class="quad-title">
@@ -492,13 +542,20 @@
           <button onclick="toggleInlineAdd('p2')" title="Quick Add"><i class="fa-solid fa-plus"></i></button>
         </div>
       </div>
-      <div class="inline-add-bar" id="addBar-p2">
-        <input type="text" id="input-p2" placeholder="Add P2 task..." onkeydown="handleInlineKey(event, 'p2')">
-        <button onclick="submitInlineAdd('p2')">Add</button>
+      <div class="inline-add-container" id="addContainer-p2">
+        <div class="inline-row-main">
+          <input type="text" id="input-p2" placeholder="Add P2 task..." onkeydown="handleInlineKey(event, 'p2')">
+          <button class="btn-rem-toggle" id="remToggle-p2" onclick="toggleReminderPicker('p2')" title="Add Deadline/Reminder"><i class="fa-regular fa-bell"></i></button>
+          <button class="btn-add-submit" onclick="submitInlineAdd('p2')">Add</button>
+        </div>
+        <div class="inline-row-reminder" id="remRow-p2">
+          <input type="datetime-local" id="remInput-p2">
+        </div>
       </div>
       <div class="task-list" id="list-p2"></div>
     </div>
 
+    <!-- P3 -->
     <div class="quadrant p3" data-quad="p3">
       <div class="quad-header">
         <div class="quad-title">
@@ -510,13 +567,20 @@
           <button onclick="toggleInlineAdd('p3')" title="Quick Add"><i class="fa-solid fa-plus"></i></button>
         </div>
       </div>
-      <div class="inline-add-bar" id="addBar-p3">
-        <input type="text" id="input-p3" placeholder="Add P3 task..." onkeydown="handleInlineKey(event, 'p3')">
-        <button onclick="submitInlineAdd('p3')">Add</button>
+      <div class="inline-add-container" id="addContainer-p3">
+        <div class="inline-row-main">
+          <input type="text" id="input-p3" placeholder="Add P3 task..." onkeydown="handleInlineKey(event, 'p3')">
+          <button class="btn-rem-toggle" id="remToggle-p3" onclick="toggleReminderPicker('p3')" title="Add Deadline/Reminder"><i class="fa-regular fa-bell"></i></button>
+          <button class="btn-add-submit" onclick="submitInlineAdd('p3')">Add</button>
+        </div>
+        <div class="inline-row-reminder" id="remRow-p3">
+          <input type="datetime-local" id="remInput-p3">
+        </div>
       </div>
       <div class="task-list" id="list-p3"></div>
     </div>
 
+    <!-- P4 -->
     <div class="quadrant p4" data-quad="p4">
       <div class="quad-header">
         <div class="quad-title">
@@ -528,26 +592,32 @@
           <button onclick="toggleInlineAdd('p4')" title="Quick Add"><i class="fa-solid fa-plus"></i></button>
         </div>
       </div>
-      <div class="inline-add-bar" id="addBar-p4">
-        <input type="text" id="input-p4" placeholder="Add P4 task..." onkeydown="handleInlineKey(event, 'p4')">
-        <button onclick="submitInlineAdd('p4')">Add</button>
+      <div class="inline-add-container" id="addContainer-p4">
+        <div class="inline-row-main">
+          <input type="text" id="input-p4" placeholder="Add P4 task..." onkeydown="handleInlineKey(event, 'p4')">
+          <button class="btn-rem-toggle" id="remToggle-p4" onclick="toggleReminderPicker('p4')" title="Add Deadline/Reminder"><i class="fa-regular fa-bell"></i></button>
+          <button class="btn-add-submit" onclick="submitInlineAdd('p4')">Add</button>
+        </div>
+        <div class="inline-row-reminder" id="remRow-p4">
+          <input type="datetime-local" id="remInput-p4">
+        </div>
       </div>
       <div class="task-list" id="list-p4"></div>
     </div>
   </main>
 
+  <!-- GitHub Vault Modal -->
   <div class="modal-overlay" id="settingsModal">
     <div class="modal-box">
       <div class="modal-title">
-        <span>GitHub Live Sync Vault</span>
+        <span>AES-256 Vault & Live Sync</span>
         <button class="modal-close" onclick="closeModal('settingsModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <!-- Auth Screen: Strictly Blank, No Pre-filled Values -->
       <div id="vaultAuthStep">
         <div class="form-group">
-          <label>Master Password</label>
-          <input type="password" id="vaultAuthPass" placeholder="Enter Master Password" value="" autocomplete="new-password">
+          <label>Enter Master Password</label>
+          <input type="password" id="vaultAuthPass" placeholder="Master Password" value="" autocomplete="new-password">
         </div>
         <button class="btn-primary" style="margin-top:8px;" onclick="verifyMasterPass()"><i class="fa-solid fa-unlock"></i> Unlock Vault</button>
       </div>
@@ -561,11 +631,15 @@
           <label>Repository (Owner/Repo)</label>
           <input type="text" id="vaultRepo" value="TechIsInMyDNA/My-Eisenhower-Matrix">
         </div>
+        <div style="font-size:0.7rem; color:#38bdf8; display:flex; align-items:center; gap:5px;">
+          <i class="fa-solid fa-lock"></i> <span>data.json is AES-GCM 256-bit encrypted.</span>
+        </div>
         <button class="btn-primary" onclick="saveVaultConfig()"><i class="fa-solid fa-floppy-disk"></i> Save & Connect Live</button>
       </div>
     </div>
   </div>
 
+  <!-- Backup & Restore Modal -->
   <div class="modal-overlay" id="backupModal">
     <div class="modal-box">
       <div class="modal-title">
@@ -573,7 +647,7 @@
         <button class="modal-close" onclick="closeModal('backupModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <p style="font-size:0.72rem; color:#94a3b8;">
-        Full tasks and completed history export/import with 0 data loss.
+        Decrypted JSON backup file export/import with 0 data loss.
       </p>
       <button class="btn-primary" onclick="exportBackup()"><i class="fa-solid fa-download"></i> Download Full Backup (.json)</button>
       <div style="border-top:1px solid #1e293b; margin: 3px 0;"></div>
@@ -585,10 +659,11 @@
     </div>
   </div>
 
+  <!-- Task Detail & Edit Modal -->
   <div class="modal-overlay" id="reminderModal">
     <div class="modal-box">
       <div class="modal-title">
-        <span>Task & Reminder Alert</span>
+        <span>Edit Task & Reminder</span>
         <button class="modal-close" onclick="closeModal('reminderModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="form-group">
@@ -615,6 +690,7 @@
     </div>
   </div>
 
+  <!-- History Drawer Modal -->
   <div class="modal-overlay" id="historyModal">
     <div class="modal-box">
       <div class="modal-title">
@@ -646,6 +722,70 @@
       document.body.classList.add('widget-mode');
     }
 
+    // --- AES-256 MILITARY GRADE ENCRYPTION CORE ---
+    async function deriveAesKey(password, salt) {
+      const enc = new TextEncoder();
+      const keyMaterial = await crypto.subtle.importKey(
+        "raw",
+        enc.encode(password),
+        { name: "PBKDF2" },
+        false,
+        ["deriveKey"]
+      );
+      return await crypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: salt,
+          iterations: 100000,
+          hash: "SHA-256"
+        },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+      );
+    }
+
+    async function encryptData(plainObject, password) {
+      const enc = new TextEncoder();
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await deriveAesKey(password, salt);
+      const encodedData = enc.encode(JSON.stringify(plainObject));
+
+      const cipherBuffer = await crypto.subtle.encrypt(
+        { name: "AES-GCM", iv: iv },
+        key,
+        encodedData
+      );
+
+      return {
+        encrypted: true,
+        salt: btoa(String.fromCharCode(...salt)),
+        iv: btoa(String.fromCharCode(...iv)),
+        cipher: btoa(String.fromCharCode(...new Uint8Array(cipherBuffer)))
+      };
+    }
+
+    async function decryptData(cipherObject, password) {
+      if (!cipherObject.encrypted) return cipherObject; // Fallback if plain
+
+      const salt = new Uint8Array(atob(cipherObject.salt).split("").map(c => c.charCodeAt(0)));
+      const iv = new Uint8Array(atob(cipherObject.iv).split("").map(c => c.charCodeAt(0)));
+      const cipher = new Uint8Array(atob(cipherObject.cipher).split("").map(c => c.charCodeAt(0)));
+
+      const key = await deriveAesKey(password, salt);
+      const decryptedBuffer = await crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: iv },
+        key,
+        cipher
+      );
+
+      const dec = new TextDecoder();
+      return JSON.parse(dec.decode(decryptedBuffer));
+    }
+
+    // Manifest Setup
     const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#070d19"/><rect x="40" y="40" width="200" height="200" rx="20" fill="#fef08a"/><rect x="272" y="40" width="200" height="200" rx="20" fill="#fecdd3"/><rect x="40" y="272" width="200" height="200" rx="20" fill="#cffafe"/><rect x="272" y="272" width="200" height="200" rx="20" fill="#bbf7d0"/></svg>`;
     const iconUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(iconSvg);
 
@@ -773,10 +913,20 @@
     }
 
     function toggleInlineAdd(quad) {
-      const bar = document.getElementById(`addBar-${quad}`);
+      const bar = document.getElementById(`addContainer-${quad}`);
       bar.classList.toggle('active');
       if (bar.classList.contains('active')) {
         document.getElementById(`input-${quad}`).focus();
+      }
+    }
+
+    function toggleReminderPicker(quad) {
+      const remRow = document.getElementById(`remRow-${quad}`);
+      const btn = document.getElementById(`remToggle-${quad}`);
+      remRow.classList.toggle('active');
+      btn.classList.toggle('active');
+      if (remRow.classList.contains('active')) {
+        document.getElementById(`remInput-${quad}`).focus();
       }
     }
 
@@ -784,11 +934,13 @@
       if (e.key === "Enter") submitInlineAdd(quad);
     }
 
-    // ULTRA-FAST 0ms INSTANT TASK ADD
     function submitInlineAdd(quad) {
       const input = document.getElementById(`input-${quad}`);
       const text = input.value.trim();
       if (!text) return;
+
+      const remInput = document.getElementById(`remInput-${quad}`);
+      const reminderValue = remInput ? remInput.value : null;
 
       const now = new Date();
       const timeStr = now.toLocaleDateString([], {day:'2-digit', month:'short'}) + " " + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
@@ -798,25 +950,23 @@
         text: text,
         quadrant: quad,
         createdAt: timeStr,
-        reminder: null,
+        reminder: reminderValue || null,
         completed: false
       };
 
-      // 1. Optimistic DOM Injection (0ms Visual Display)
       const container = document.getElementById(`list-${quad}`);
       if (container) {
         container.prepend(createTaskCardDOM(newTask));
       }
 
-      // 2. Clear input instantly
       input.value = "";
+      if (remInput) remInput.value = "";
+      document.getElementById(`remRow-${quad}`).classList.remove('active');
+      document.getElementById(`remToggle-${quad}`).classList.remove('active');
       input.focus();
 
-      // 3. State update & Silent local save
       state.tasks.unshift(newTask);
       saveLocal();
-
-      // 4. Fire background sync
       fastInstantSync();
     }
 
@@ -929,7 +1079,7 @@
       }, null, 2));
       const a = document.createElement('a');
       a.setAttribute("href", dataStr);
-      a.setAttribute("download", `Eisenhower_Backup_${Date.now()}.json`);
+      a.setAttribute("download", `Eisenhower_Decrypted_Backup_${Date.now()}.json`);
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -976,13 +1126,11 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    // STRICT PASSWORD BOX CLEAR (NO PRE-FILL / NO LEAK)
     document.getElementById('btnSettings').onclick = () => {
       document.getElementById('vaultAuthStep').style.display = "block";
       document.getElementById('vaultConfigStep').style.display = "none";
       const passInput = document.getElementById('vaultAuthPass');
       passInput.value = "";
-      passInput.setAttribute("value", "");
       openModal('settingsModal');
       setTimeout(() => { passInput.focus(); }, 150);
     };
@@ -1012,7 +1160,7 @@
       if (token) localStorage.setItem("gh_pat_vault", btoa(token));
       localStorage.setItem("gh_repo_vault", repo);
 
-      alert("GitHub Vault unlocked & configuration saved!");
+      alert("Settings saved! data.json is protected with AES-256.");
       closeModal('settingsModal');
       syncFromGitHub(true);
     }
@@ -1026,7 +1174,7 @@
       return localStorage.getItem("gh_repo_vault") || GITHUB_REPO_DEFAULT;
     }
 
-    // ULTRA-FAST DIRECT LIVE SYNC ENGINE
+    // --- ENCRYPTED GITHUB SYNC ENGINE ---
     async function syncFromGitHub(force = false) {
       if (state.isPushing && !force) return;
 
@@ -1055,7 +1203,11 @@
         if (res.status === 200) {
           const json = await res.json();
           state.sha = json.sha;
-          const content = JSON.parse(decodeURIComponent(escape(atob(json.content))));
+          const rawContent = JSON.parse(decodeURIComponent(escape(atob(json.content))));
+          
+          // Decrypt payload using Master Password
+          const content = await decryptData(rawContent, MASTER_PASS);
+
           if (content.tasks) {
             const localStr = JSON.stringify({ tasks: state.tasks, history: state.history });
             const remoteStr = JSON.stringify({ tasks: content.tasks, history: content.history || [] });
@@ -1091,7 +1243,7 @@
       const text = document.getElementById('syncText');
       if (dot && text) {
         dot.className = "status-dot syncing";
-        text.innerText = "Syncing...";
+        text.innerText = "Encrypting...";
       }
 
       const payload = {
@@ -1100,9 +1252,12 @@
         updatedAt: new Date().toISOString()
       };
 
+      // Encrypt payload before pushing to GitHub
+      const encryptedPayload = await encryptData(payload, MASTER_PASS);
+
       const bodyData = {
-        message: "Fast-sync via My Eisenhower Matrix",
-        content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))))
+        message: "Encrypted sync via My Eisenhower Matrix",
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(encryptedPayload, null, 2))))
       };
       if (state.sha) bodyData.sha = state.sha;
 
