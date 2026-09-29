@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>My Eisenhower Matrix</title>
+  
+  <!-- Tailwind CSS & Font Awesome CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            // Quadrant 1: Important & Urgent (Light Pastel Yellow)
+            q1: { bg: '#FEF9C3', border: '#FDE047', text: '#713F12', bar: '#854D0E', btn: '#FEF08A' },
+            // Quadrant 2: Important & Not Urgent (Light Pastel Coral/Pink)
+            q2: { bg: '#FEE2E2', border: '#FCA5A5', text: '#881337', bar: '#9F1239', btn: '#FECDD3' },
+            // Quadrant 3: Not Important & Urgent (Light Pastel Cyan)
+            q3: { bg: '#CFFAFE', border: '#67E8F9', text: '#164E63', bar: '#0E7490', btn: '#A5F3FC' },
+            // Quadrant 4: Not Important & Not Urgent (Light Pastel Mint/Green)
+            q4: { bg: '#DCFCE7', border: '#86EFAC', text: '#14532D', bar: '#15803D', btn: '#BBF7D0' },
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      box-sizing: border-box;
+    }
+    input, textarea {
+      user-select: text;
+    }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+    
+    /* Sleek slim scrollbars */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.28);
+    }
+
+    /* Strikethrough & vanish animation for completed items */
+    .task-complete-anim {
+      text-decoration: line-through !important;
+      opacity: 0.35 !important;
+      transform: scale(0.97) translateX(4px);
+      transition: all 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Dragging highlight style */
+    .drag-over-active {
+      outline: 2px dashed #0284c7 !important;
+      background-color: rgba(255, 255, 255, 0.4) !important;
+    }
+
+    /* Widget / Picture-in-picture / Homescreen mode */
+    body.widget-mode {
+      background: #fafaf9 !important;
+      padding: 0 !important;
+    }
+    body.widget-mode #mainHeader {
+      display: none !important;
+    }
+    body.widget-mode #matrixContainer {
+      height: 100vh !important;
+      padding: 4px !important;
+      gap: 4px !important;
+    }
+    body.widget-mode .quadrant-box {
+      border-width: 1.5px !important;
+      padding: 6px !important;
+      border-radius: 12px !important;
+    }
+    body.widget-mode .quadrant-header-title {
+      font-size: 11px !important;
+    }
+    body.widget-mode .task-card-item {
+      padding: 6px 8px !important;
+      border-radius: 8px !important;
+      gap: 2px !important;
+    }
+    body.widget-mode .timestamp-info {
+      display: none !important;
+    }
+  </style>
+</head>
+<body class="bg-stone-100 text-stone-900 font-sans antialiased flex flex-col h-screen select-none">
+
+  <header id="mainHeader" class="h-14 bg-white/95 backdrop-blur border-b border-stone-200 shrink-0 px-3 sm:px-5 flex items-center justify-between z-30 shadow-xs">
+    <div class="flex items-center gap-2 sm:gap-3">
+      <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 via-rose-500 to-sky-500 flex items-center justify-center text-white shadow-sm font-black text-sm tracking-tight">
+        EM
+      </div>
+      <div>
+        <h1 class="text-sm sm:text-base font-bold text-stone-900 leading-tight">My Eisenhower Matrix</h1>
+        <p class="text-[10px] text-stone-500 hidden sm:block font-medium">TechIsInMyDNA &bull; Background Continuous Sync</p>
+      </div>
+    </div>
+
+    <!-- Live Auto-Sync Status Badge -->
+    <div class="flex items-center gap-1.5 sm:gap-2">
+      <div id="syncBadge" title="GitHub Live Sync Status" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-stone-100 text-stone-600 border border-stone-200 transition-all cursor-pointer" onclick="forceSyncNow()">
+        <span class="w-2 h-2 rounded-full bg-emerald-500" id="syncDot"></span>
+        <span id="syncText" class="truncate max-w-[110px] sm:max-w-none">Live Sync</span>
+      </div>
+
+      <!-- Quick Search (Desktop) -->
+      <div class="relative hidden lg:block">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2 text-xs text-stone-400"></i>
+        <input type="text" id="searchInput" oninput="renderAllQuadrants()" placeholder="Search active tasks..."
+               class="w-48 pl-8 pr-3 py-1 text-xs rounded-xl border border-stone-200 bg-stone-50 focus:bg-white focus:outline-none focus:ring-1 focus:ring-stone-900 transition">
+      </div>
+
+      <!-- Widget Mode Toggle Button -->
+      <button onclick="toggleWidgetMode()" title="Toggle Widget / APK View" class="w-8 h-8 flex items-center justify-center rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 transition">
+        <i class="fa-solid fa-expand text-xs"></i>
+      </button>
+
+      <!-- History Modal Trigger Button -->
+      <button onclick="openHistoryModal()" title="Completed Tasks Logbook" class="w-8 h-8 flex items-center justify-center rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 transition relative">
+        <i class="fa-solid fa-clock-rotate-left text-xs"></i>
+        <span id="historyCounterPill" class="hidden absolute -top-1 -right-1 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs">0</span>
+      </button>
+
+      <!-- Settings & GitHub Credentials Modal Trigger -->
+      <button onclick="openSettingsModal()" title="Sync Settings & Passcode" class="w-8 h-8 flex items-center justify-center rounded-xl bg-stone-900 hover:bg-stone-800 text-white transition shadow-xs">
+        <i class="fa-solid fa-gear text-xs"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-1 w-full p-2 sm:p-3 overflow-hidden">
+    <div id="matrixContainer" class="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3 h-full">
+
+      <!-- QUADRANT 1: Important and Urgent (Do First) -->
+      <section id="quadrant-q1" data-quadrant="urgent_important" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'urgent_important')"
+               class="quadrant-box bg-q1-bg border-2 border-q1-border rounded-2xl p-2.5 sm:p-3 flex flex-col shadow-xs overflow-hidden transition-all duration-150">
+        <div class="flex items-center justify-between pb-2 mb-2 border-b border-amber-300/60">
+          <div class="flex items-center gap-2">
+            <button onclick="speakQuadrant('urgent_important')" title="Read aloud" class="w-7 h-7 rounded-lg bg-q1-btn hover:bg-amber-300 text-q1-text flex items-center justify-center transition">
+              <i class="fa-solid fa-volume-high text-xs"></i>
+            </button>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="quadrant-header-title font-bold text-xs sm:text-sm text-q1-text uppercase tracking-wider">Important and Urgent</span>
+                <span id="badge-urgent_important" class="text-[10px] bg-amber-200 text-amber-900 font-extrabold px-1.5 py-0.2 rounded-full">0</span>
+              </div>
+              <div class="w-12 h-1 bg-q1-bar rounded-full mt-0.5 opacity-70"></div>
+            </div>
+          </div>
+          <button onclick="openCreateTaskModal('urgent_important')" title="Add task" class="w-7 h-7 rounded-lg bg-q1-btn hover:bg-amber-300 text-q1-text font-black flex items-center justify-center transition shadow-xs">
+            <i class="fa-solid fa-plus text-xs"></i>
+          </button>
+        </div>
+        <div id="list-urgent_important" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+      </section>
+
+      <!-- QUADRANT 2: Important and Not Urgent (Schedule) -->
+      <section id="quadrant-q2" data-quadrant="not_urgent_important" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'not_urgent_important')"
+               class="quadrant-box bg-q2-bg border-2 border-q2-border rounded-2xl p-2.5 sm:p-3 flex flex-col shadow-xs overflow-hidden transition-all duration-150">
+        <div class="flex items-center justify-between pb-2 mb-2 border-b border-rose-300/60">
+          <div class="flex items-center gap-2">
+            <button onclick="speakQuadrant('not_urgent_important')" title="Read aloud" class="w-7 h-7 rounded-lg bg-q2-btn hover:bg-rose-300 text-q2-text flex items-center justify-center transition">
+              <i class="fa-solid fa-volume-high text-xs"></i>
+            </button>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="quadrant-header-title font-bold text-xs sm:text-sm text-q2-text uppercase tracking-wider">Important and Not Urgent</span>
+                <span id="badge-not_urgent_important" class="text-[10px] bg-rose-200 text-rose-900 font-extrabold px-1.5 py-0.2 rounded-full">0</span>
+              </div>
+              <div class="w-12 h-1 bg-q2-bar rounded-full mt-0.5 opacity-70"></div>
+            </div>
+          </div>
+          <button onclick="openCreateTaskModal('not_urgent_important')" title="Add task" class="w-7 h-7 rounded-lg bg-q2-btn hover:bg-rose-300 text-q2-text font-black flex items-center justify-center transition shadow-xs">
+            <i class="fa-solid fa-plus text-xs"></i>
+          </button>
+        </div>
+        <div id="list-not_urgent_important" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+      </section>
+
+      <!-- QUADRANT 3: Not Important and Urgent (Delegate) -->
+      <section id="quadrant-q3" data-quadrant="urgent_not_important" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'urgent_not_important')"
+               class="quadrant-box bg-q3-bg border-2 border-q3-border rounded-2xl p-2.5 sm:p-3 flex flex-col shadow-xs overflow-hidden transition-all duration-150">
+        <div class="flex items-center justify-between pb-2 mb-2 border-b border-cyan-300/60">
+          <div class="flex items-center gap-2">
+            <button onclick="speakQuadrant('urgent_not_important')" title="Read aloud" class="w-7 h-7 rounded-lg bg-q3-btn hover:bg-cyan-300 text-q3-text flex items-center justify-center transition">
+              <i class="fa-solid fa-volume-high text-xs"></i>
+            </button>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="quadrant-header-title font-bold text-xs sm:text-sm text-q3-text uppercase tracking-wider">Not Important and Urgent</span>
+                <span id="badge-urgent_not_important" class="text-[10px] bg-cyan-200 text-cyan-900 font-extrabold px-1.5 py-0.2 rounded-full">0</span>
+              </div>
+              <div class="w-12 h-1 bg-q3-bar rounded-full mt-0.5 opacity-70"></div>
+            </div>
+          </div>
+          <button onclick="openCreateTaskModal('urgent_not_important')" title="Add task" class="w-7 h-7 rounded-lg bg-q3-btn hover:bg-cyan-300 text-q3-text font-black flex items-center justify-center transition shadow-xs">
+            <i class="fa-solid fa-plus text-xs"></i>
+          </button>
+        </div>
+        <div id="list-urgent_not_important" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+      </section>
+
+      <!-- QUADRANT 4: Not Important and Not Urgent (Eliminate) -->
+      <section id="quadrant-q4" data-quadrant="not_urgent_not_important" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event, 'not_urgent_not_important')"
+               class="quadrant-box bg-q4-bg border-2 border-q4-border rounded-2xl p-2.5 sm:p-3 flex flex-col shadow-xs overflow-hidden transition-all duration-150">
+        <div class="flex items-center justify-between pb-2 mb-2 border-b border-emerald-300/60">
+          <div class="flex items-center gap-2">
+            <button onclick="speakQuadrant('not_urgent_not_important')" title="Read aloud" class="w-7 h-7 rounded-lg bg-q4-btn hover:bg-emerald-300 text-q4-text flex items-center justify-center transition">
+              <i class="fa-solid fa-volume-high text-xs"></i>
+            </button>
+            <div>
+              <div class="flex items-center gap-1.5">
+                <span class="quadrant-header-title font-bold text-xs sm:text-sm text-q4-text uppercase tracking-wider">Not Important &amp; Not Urgent</span>
+                <span id="badge-not_urgent_not_important" class="text-[10px] bg-emerald-200 text-emerald-900 font-extrabold px-1.5 py-0.2 rounded-full">0</span>
+              </div>
+              <div class="w-12 h-1 bg-q4-bar rounded-full mt-0.5 opacity-70"></div>
+            </div>
+          </div>
+          <button onclick="openCreateTaskModal('not_urgent_not_important')" title="Add task" class="w-7 h-7 rounded-lg bg-q4-btn hover:bg-emerald-300 text-q4-text font-black flex items-center justify-center transition shadow-xs">
+            <i class="fa-solid fa-plus text-xs"></i>
+          </button>
+        </div>
+        <div id="list-not_urgent_not_important" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <div id="taskModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden border border-stone-200">
+      <div class="px-5 py-3.5 border-b border-stone-100 flex items-center justify-between bg-stone-50">
+        <h3 id="taskModalTitle" class="font-bold text-stone-900 text-sm sm:text-base">Add New Task</h3>
+        <button onclick="closeTaskModal()" class="text-stone-400 hover:text-stone-700 w-7 h-7 rounded-lg flex items-center justify-center">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <form id="taskModalForm" onsubmit="saveTaskForm(event)" class="p-4 sm:p-5 space-y-3.5">
+        <input type="hidden" id="editTaskId">
+
+        <!-- Task Text Area + Voice Dictation -->
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-stone-500 tracking-wider mb-1">Task Content</label>
+          <div class="relative">
+            <textarea id="taskContentInput" required rows="3" placeholder="e.g. Janta Bank bhojha utarna..."
+                      class="w-full px-3 py-2 pr-10 text-xs sm:text-sm rounded-xl border border-stone-300 focus:border-stone-900 focus:ring-1 focus:ring-stone-900 outline-none leading-relaxed resize-none"></textarea>
+            <button type="button" onclick="toggleSpeechRecognition()" id="micBtn" title="Speak task (Hindi/English)"
+                    class="absolute right-2 top-2 w-8 h-8 rounded-lg flex items-center justify-center text-stone-400 hover:text-rose-600 transition">
+              <i class="fa-solid fa-microphone text-sm" id="micIcon"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quadrant Dropdown -->
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-stone-500 tracking-wider mb-1">Target Quadrant</label>
+          <select id="taskQuadrantInput" class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-stone-300 bg-white focus:outline-none focus:ring-1 focus:ring-stone-900">
+            <option value="urgent_important">Important and Urgent (Do First)</option>
+            <option value="not_urgent_important">Important and Not Urgent (Schedule)</option>
+            <option value="urgent_not_important">Not Important and Urgent (Delegate)</option>
+            <option value="not_urgent_not_important">Not Important and Not Urgent (Eliminate)</option>
+          </select>
+        </div>
+
+        <!-- Optional Due Date & Time -->
+        <div>
+          <label class="block text-[11px] font-bold uppercase text-stone-500 tracking-wider mb-1">Due Date &amp; Time (Optional)</label>
+          <input type="datetime-local" id="taskDueDateInput" class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-stone-300 bg-white focus:outline-none focus:ring-1 focus:ring-stone-900">
+        </div>
+
+        <!-- Action buttons -->
+        <div class="pt-2 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeTaskModal()" class="px-3.5 py-2 text-xs font-semibold text-stone-600 hover:bg-stone-100 rounded-xl transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 text-xs font-bold text-white bg-stone-900 hover:bg-stone-800 rounded-xl shadow-xs transition">
+            Save Task
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="historyModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-end">
+    <div class="bg-white h-full w-full max-w-md shadow-2xl flex flex-col border-l border-stone-200">
+      <div class="px-4 py-3 border-b border-stone-200 flex items-center justify-between bg-stone-50">
+        <div>
+          <h3 class="font-bold text-stone-900 text-sm flex items-center gap-2">
+            <i class="fa-solid fa-clock-rotate-left text-stone-500"></i>
+            Completed History
+          </h3>
+          <p class="text-[10px] text-stone-400">Timestamped record of done tasks</p>
+        </div>
+        <button onclick="closeHistoryModal()" class="text-stone-400 hover:text-stone-700 w-7 h-7 rounded-lg flex items-center justify-center">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="p-3 border-b border-stone-100 bg-white flex items-center gap-2">
+        <input type="text" id="historyFilterInput" oninput="renderHistoryList()" placeholder="Search history..."
+               class="flex-1 px-3 py-1.5 text-xs rounded-xl border border-stone-200 bg-stone-50 outline-none">
+        <button onclick="clearAllHistory()" class="px-2.5 py-1.5 text-[11px] font-bold text-rose-600 hover:bg-rose-50 rounded-xl border border-rose-200 transition">
+          Clear All
+        </button>
+      </div>
+
+      <div id="historyListContainer" class="flex-1 overflow-y-auto p-3 space-y-2"></div>
+    </div>
+  </div>
+
+  <div id="settingsModal" class="fixed inset-0 bg-stone-900/60 backdrop-blur-xs z-50 hidden flex items-center justify-center p-3 sm:p-4">
+    <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden border border-stone-200">
+      <div class="px-5 py-3.5 border-b border-stone-100 flex items-center justify-between bg-stone-50">
+        <div>
+          <h3 class="font-bold text-stone-900 text-sm">Settings &amp; Live Sync</h3>
+          <p class="text-[10px] text-stone-400">TechIsInMyDNA / My-Eisenhower-Matrix</p>
+        </div>
+        <button onclick="closeSettingsModal()" class="text-stone-400 hover:text-stone-700 w-7 h-7 rounded-lg flex items-center justify-center">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="p-4 sm:p-5 space-y-4 max-h-[82vh] overflow-y-auto">
+        <!-- Master Password Lock Gate -->
+        <div id="masterGate" class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 space-y-2">
+          <div class="flex items-center gap-2 text-amber-900 text-xs font-bold">
+            <i class="fa-solid fa-lock"></i>
+            <span>Master Password Protected</span>
+          </div>
+          <p class="text-[11px] text-amber-800">Enter master password to edit token or limits:</p>
+          <div class="flex gap-2">
+            <input type="password" id="masterPassInput" placeholder="Master Password"
+                   class="flex-1 px-3 py-1.5 text-xs rounded-xl border border-amber-300 focus:outline-none bg-white">
+            <button onclick="verifyMasterPassword()" class="px-3 py-1.5 bg-amber-700 hover:bg-amber-800 text-white rounded-xl text-xs font-bold transition">
+              Unlock
+            </button>
+          </div>
+          <p id="masterError" class="text-[11px] text-rose-600 hidden font-semibold">Wrong password! Access denied.</p>
+        </div>
+
+        <!-- Protected Form Area -->
+        <div id="protectedForm" class="space-y-3.5 opacity-40 pointer-events-none transition-all">
+          <div>
+            <label class="block text-[11px] font-bold uppercase text-stone-500 tracking-wider mb-1">GitHub Personal Access Token (PAT)</label>
+            <p class="text-[10px] text-stone-400 mb-1.5">Kept in your browser's private vault (never committed into raw repo code to prevent token revoke).</p>
+            <input type="password" id="githubTokenInput" placeholder="ghp_... or github_pat_..."
+                   class="w-full px-3 py-2 text-xs rounded-xl border border-stone-300 font-mono outline-none focus:border-stone-900">
+          </div>
+
+          <!-- WIP Limits per category -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase text-stone-500 tracking-wider mb-1">Quadrant Task Limits (0 = Unlimited)</label>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <span class="text-[10px] font-medium text-stone-500 block truncate">1. Important &amp; Urgent</span>
+                <input type="number" id="limit_urgent_important" min="0" value="0" class="w-full px-2 py-1 text-xs rounded-lg border border-stone-300">
+              </div>
+              <div>
+                <span class="text-[10px] font-medium text-stone-500 block truncate">2. Important &amp; Not Urgent</span>
+                <input type="number" id="limit_not_urgent_important" min="0" value="0" class="w-full px-2 py-1 text-xs rounded-lg border border-stone-300">
+              </div>
+              <div>
+                <span class="text-[10px] font-medium text-stone-500 block truncate">3. Not Important &amp; Urgent</span>
+                <input type="number" id="limit_urgent_not_important" min="0" value="0" class="w-full px-2 py-1 text-xs rounded-lg border border-stone-300">
+              </div>
+              <div>
+                <span class="text-[10px] font-medium text-stone-500 block truncate">4. Not Important &amp; Not Urgent</span>
+                <input type="number" id="limit_not_urgent_not_important" min="0" value="0" class="w-full px-2 py-1 text-xs rounded-lg border border-stone-300">
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2 flex items-center justify-between border-t border-stone-100">
+            <button type="button" onclick="forceSyncNow()" class="px-3 py-1.5 text-xs font-bold text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-xl transition">
+              <i class="fa-solid fa-rotate mr-1"></i> Sync Now
+            </button>
+            <button type="button" onclick="saveSettingsForm()" class="px-4 py-2 text-xs font-bold text-white bg-stone-900 hover:bg-stone-800 rounded-xl shadow-xs transition">
+              Save &amp; Connect
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toastBox" class="fixed bottom-4 right-4 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none bg-stone-900 text-white px-3.5 py-2 rounded-xl shadow-xl text-xs font-medium flex items-center gap-2">
+    <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400"></i>
+    <span id="toastMsg">Synced</span>
+  </div>
+
+  <script>
+    const GH_OWNER = 'TechIsInMyDNA';
+    const GH_REPO = 'My-Eisenhower-Matrix';
+    const GH_FILE = 'data.json';
+    const MASTER_PASS = 'Shubham@144';
+
+    // Core Local App State
+    let appState = {
+      tasks: [],
+      history: [],
+      limits: {
+        urgent_important: 0,
+        not_urgent_important: 0,
+        urgent_not_important: 0,
+        not_urgent_not_important: 0
+      },
+      fileSha: null,
+      lastRemoteSyncTime: 0
+    };
+
+    let isUnlocked = false;
+    let draggedTaskId = null;
+    let recognitionInstance = null;
+    let isListening = false;
+    let debouncedPushTimer = null;
+
+    const STORAGE_KEY_DATA = 'mem_state_data_v1';
+    const STORAGE_KEY_VAULT = 'mem_gh_token_vault_v1';
+
+    // Format human-friendly timestamps
+    function formatTime(isoStr) {
+      if (!isoStr) return '';
+      const d = new Date(isoStr);
+      if (isNaN(d.getTime())) return isoStr;
+      return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) + ' ' +
+             d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    }
+
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toastBox');
+      const text = document.getElementById('toastMsg');
+      const icon = document.getElementById('toastIcon');
+      text.textContent = msg;
+
+      if (type === 'error') {
+        icon.className = 'fa-solid fa-circle-exclamation text-rose-400';
+      } else if (type === 'sync') {
+        icon.className = 'fa-solid fa-arrows-rotate fa-spin text-sky-400';
+      } else {
+        icon.className = 'fa-solid fa-circle-check text-emerald-400';
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      clearTimeout(window._tTimer);
+      window._tTimer = setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2200);
+    }
+
+    function updateSyncStatus(status, label) {
+      const badge = document.getElementById('syncBadge');
+      const dot = document.getElementById('syncDot');
+      const text = document.getElementById('syncText');
+      text.textContent = label;
+
+      if (status === 'synced') {
+        dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+        badge.className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 transition-all cursor-pointer';
+      } else if (status === 'syncing') {
+        dot.className = 'w-2 h-2 rounded-full bg-sky-500 animate-spin';
+        badge.className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-sky-50 text-sky-700 border border-sky-200 transition-all cursor-pointer';
+      } else if (status === 'error') {
+        dot.className = 'w-2 h-2 rounded-full bg-rose-500';
+        badge.className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 transition-all cursor-pointer';
+      } else {
+        dot.className = 'w-2 h-2 rounded-full bg-stone-400';
+        badge.className = 'flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-stone-100 text-stone-600 border border-stone-200 transition-all cursor-pointer';
+      }
+    }
+
+    function getStoredToken() {
+      return localStorage.getItem(STORAGE_KEY_VAULT) || '';
+    }
+
+    function setStoredToken(token) {
+      if (token) {
+        localStorage.setItem(STORAGE_KEY_VAULT, token.trim());
+      } else {
+        localStorage.removeItem(STORAGE_KEY_VAULT);
+      }
+    }
+
+    function saveLocal() {
+      localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify({
+        tasks: appState.tasks,
+        history: appState.history,
+        limits: appState.limits
+      }));
+    }
+
+    function loadLocal() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_DATA);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed.tasks)) appState.tasks = parsed.tasks;
+          if (Array.isArray(parsed.history)) appState.history = parsed.history;
+          if (parsed.limits) appState.limits = { ...appState.limits, ...parsed.limits };
+        }
+      } catch (e) {
+        console.warn('Local read error', e);
+      }
+    }
+
+    async function pullGitHubData(isManual = false) {
+      const token = getStoredToken();
+      if (!token) {
+        updateSyncStatus('offline', 'Local Only');
+        return;
+      }
+
+      try {
+        const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`;
+        const res = await fetch(url, {
+          headers: {
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json'
+          },
+          cache: 'no-store'
+        });
+
+        if (res.status === 200) {
+          const fileMeta = await res.json();
+          // If remote SHA is different or we haven't synced SHA yet
+          if (fileMeta.sha !== appState.fileSha) {
+            appState.fileSha = fileMeta.sha;
+            const decoded = decodeURIComponent(escape(atob(fileMeta.content.replace(/\s/g, ''))));
+            const remoteData = JSON.parse(decoded);
+
+            if (Array.isArray(remoteData.tasks)) appState.tasks = remoteData.tasks;
+            if (Array.isArray(remoteData.history)) appState.history = remoteData.history;
+            if (remoteData.limits) appState.limits = { ...appState.limits, ...remoteData.limits };
+
+            saveLocal();
+            renderAllQuadrants();
+            renderHistoryList();
+          }
+          updateSyncStatus('synced', 'Live Synced');
+          if (isManual) showToast('Refreshed with GitHub');
+        } else if (res.status === 404) {
+          // File does not exist in repo yet -> auto push initial structure
+          await pushGitHubData();
+        } else {
+          updateSyncStatus('error', 'Token Error');
+        }
+      } catch (err) {
+        console.error('Pull sync failed', err);
+        updateSyncStatus('error', 'Offline / Sync Error');
+      }
+    }
+
+    function queueLiveSync() {
+      saveLocal();
+      renderAllQuadrants();
+      renderHistoryList();
+
+      clearTimeout(debouncedPushTimer);
+      debouncedPushTimer = setTimeout(() => {
+        pushGitHubData();
+      }, 800);
+    }
+
+    async function pushGitHubData() {
+      const token = getStoredToken();
+      if (!token) {
+        updateSyncStatus('offline', 'Saved Locally');
+        return;
+      }
+
+      updateSyncStatus('syncing', 'Syncing...');
+      try {
+        const url = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`;
+        
+        // Ensure we have current SHA if missing
+        if (!appState.fileSha) {
+          const checkRes = await fetch(url, {
+            headers: {
+              'Authorization': `token ${token}`,
+              'Accept': 'application/vnd.github.v3+json'
+            },
+            cache: 'no-store'
+          });
+          if (checkRes.status === 200) {
+            const data = await checkRes.json();
+            appState.fileSha = data.sha;
+          }
+        }
+
+        const payload = {
+          tasks: appState.tasks,
+          history: appState.history,
+          limits: appState.limits,
+          lastUpdated: new Date().toISOString()
+        };
+
+        const jsonStr = JSON.stringify(payload, null, 2);
+        const encodedContent = btoa(unescape(encodeURIComponent(jsonStr)));
+
+        const requestBody = {
+          message: `Sync matrix [${new Date().toLocaleTimeString('en-US')}]`,
+          content: encodedContent
+        };
+        if (appState.fileSha) {
+          requestBody.sha = appState.fileSha;
+        }
+
+        const putRes = await fetch(url, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${token}`,
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestBody)
+        });
+
+        if (putRes.ok) {
+          const resData = await putRes.json();
+          appState.fileSha = resData.content.sha;
+          updateSyncStatus('synced', 'Live Synced');
+        } else if (putRes.status === 409) {
+          // Conflict: Pull remote first then retry push
+          appState.fileSha = null;
+          await pullGitHubData();
+        } else {
+          updateSyncStatus('error', 'Push Error');
+        }
+      } catch (err) {
+        console.error('Push failed', err);
+        updateSyncStatus('error', 'Sync Failed');
+      }
+    }
+
+    function forceSyncNow() {
+      pullGitHubData(true);
+    }
+
+    function renderAllQuadrants() {
+      const qKeys = ['urgent_important', 'not_urgent_important', 'urgent_not_important', 'not_urgent_not_important'];
+      const query = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
+
+      qKeys.forEach(qKey => {
+        const container = document.getElementById(`list-${qKey}`);
+        const badge = document.getElementById(`badge-${qKey}`);
+        
+        let quadrantTasks = appState.tasks.filter(t => t.quadrant === qKey);
+        badge.textContent = quadrantTasks.length;
+
+        // WIP limit check
+        const maxLimit = parseInt(appState.limits[qKey] || 0, 10);
+        if (maxLimit > 0 && quadrantTasks.length > maxLimit) {
+          badge.className = 'text-[10px] bg-rose-500 text-white font-black px-1.5 py-0.2 rounded-full animate-bounce';
+        } else {
+          badge.className = 'text-[10px] bg-stone-900/10 text-stone-800 font-extrabold px-1.5 py-0.2 rounded-full';
+        }
+
+        if (query) {
+          quadrantTasks = quadrantTasks.filter(t => t.text.toLowerCase().includes(query));
+        }
+
+        if (quadrantTasks.length === 0) {
+          container.innerHTML = `
+            <div class="h-24 sm:h-28 flex flex-col items-center justify-center border-2 border-dashed border-stone-300/60 rounded-xl text-stone-400 text-xs">
+              <i class="fa-regular fa-clipboard text-sm mb-1 opacity-50"></i>
+              <span>No tasks here</span>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = quadrantTasks.map((t, idx) => {
+          const isOverdue = t.dueDate && new Date(t.dueDate) < new Date() && !t.completed;
+          return `
+            <div id="card-${t.id}" draggable="true" ondragstart="handleDragStart(event, '${t.id}')"
+                 class="task-card-item bg-white rounded-xl p-2.5 sm:p-3 shadow-xs border border-stone-200 flex flex-col gap-1.5 transition-all hover:shadow-md cursor-grab active:cursor-grabbing group">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-start gap-2 flex-1 min-w-0">
+                  <button onclick="completeTaskWithStrike('${t.id}')" title="Mark Done"
+                          class="mt-0.5 w-4 h-4 sm:w-5 sm:h-5 rounded border border-stone-300 hover:border-emerald-500 hover:bg-emerald-50 flex items-center justify-center text-emerald-600 transition shrink-0">
+                    <i class="fa-solid fa-check text-[9px] opacity-0 group-hover:opacity-75 transition"></i>
+                  </button>
+                  <span onclick="editTaskModal('${t.id}')" class="text-xs sm:text-[13px] font-semibold text-stone-800 break-words leading-tight cursor-pointer hover:text-stone-950 flex-1">
+                    ${escapeHtml(t.text)}
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-1 shrink-0">
+                  <button onclick="shareTaskWhatsApp('${t.id}')" title="Share via WhatsApp" class="text-stone-400 hover:text-emerald-600 w-5 h-5 flex items-center justify-center">
+                    <i class="fa-brands fa-whatsapp text-xs"></i>
+                  </button>
+                  <button onclick="moveTaskNext('${t.id}')" title="Move to next quadrant" class="text-stone-400 hover:text-sky-600 w-5 h-5 flex items-center justify-center">
+                    <i class="fa-solid fa-arrow-right-arrow-left text-[11px]"></i>
+                  </button>
+                  <button onclick="deleteTaskDirect('${t.id}')" title="Delete" class="text-stone-400 hover:text-rose-600 w-5 h-5 flex items-center justify-center">
+                    <i class="fa-solid fa-trash-can text-[11px]"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Timestamp & Due Date Footer -->
+              <div class="timestamp-info flex flex-wrap items-center justify-between text-[10px] text-stone-400 pt-1 border-t border-stone-100">
+                <span title="Created timestamp"><i class="fa-regular fa-calendar-plus mr-0.5"></i>${formatTime(t.createdAt)}</span>
+                ${t.dueDate ? `
+                  <span class="px-1.5 py-0.2 rounded font-medium ${isOverdue ? 'bg-rose-100 text-rose-700 font-bold' : 'bg-stone-100 text-stone-600'}">
+                    <i class="fa-regular fa-clock mr-0.5"></i>${formatTime(t.dueDate)} ${isOverdue ? '&bull; OVERDUE' : ''}
+                  </span>
+                ` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+      });
+
+      // Update history pill count
+      const historyPill = document.getElementById('historyCounterPill');
+      if (appState.history.length > 0) {
+        historyPill.textContent = appState.history.length;
+        historyPill.classList.remove('hidden');
+      } else {
+        historyPill.classList.add('hidden');
+      }
+    }
+
+    function openCreateTaskModal(quadrant = 'urgent_important') {
+      document.getElementById('taskModalForm').reset();
+      document.getElementById('editTaskId').value = '';
+      document.getElementById('taskModalTitle').textContent = 'Add New Task';
+      document.getElementById('taskQuadrantInput').value = quadrant;
+      document.getElementById('taskModal').classList.remove('hidden');
+      setTimeout(() => document.getElementById('taskContentInput').focus(), 80);
+    }
+
+    function editTaskModal(taskId) {
+      const task = appState.tasks.find(t => t.id === taskId);
+      if (!task) return;
+      document.getElementById('editTaskId').value = task.id;
+      document.getElementById('taskContentInput').value = task.text;
+      document.getElementById('taskQuadrantInput').value = task.quadrant;
+      document.getElementById('taskDueDateInput').value = task.dueDate || '';
+      document.getElementById('taskModalTitle').textContent = 'Edit Task';
+      document.getElementById('taskModal').classList.remove('hidden');
+    }
+
+    function closeTaskModal() {
+      document.getElementById('taskModal').classList.add('hidden');
+      if (isListening) stopSpeechRecognition();
+    }
+
+    function saveTaskForm(e) {
+      e.preventDefault();
+      const id = document.getElementById('editTaskId').value;
+      const text = document.getElementById('taskContentInput').value.trim();
+      const quadrant = document.getElementById('taskQuadrantInput').value;
+      const dueDate = document.getElementById('taskDueDateInput').value;
+
+      if (!text) return;
+
+      if (id) {
+        const item = appState.tasks.find(t => t.id === id);
+        if (item) {
+          item.text = text;
+          item.quadrant = quadrant;
+          item.dueDate = dueDate || null;
+        }
+      } else {
+        const newTask = {
+          id: 'task_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+          text: text,
+          quadrant: quadrant,
+          createdAt: new Date().toISOString(),
+          dueDate: dueDate || null,
+          completed: false,
+          completedAt: null
+        };
+        appState.tasks.unshift(newTask);
+      }
+
+      closeTaskModal();
+      queueLiveSync();
+    }
+
+    function completeTaskWithStrike(taskId) {
+      const el = document.getElementById(`card-${taskId}`);
+      if (el) el.classList.add('task-complete-anim');
+
+      setTimeout(() => {
+        const idx = appState.tasks.findIndex(t => t.id === taskId);
+        if (idx !== -1) {
+          const [completedItem] = appState.tasks.splice(idx, 1);
+          completedItem.completed = true;
+          completedItem.completedAt = new Date().toISOString();
+          appState.history.unshift(completedItem);
+          queueLiveSync();
+          showToast('Archived into History');
+        }
+      }, 300);
+    }
+
+    function deleteTaskDirect(taskId) {
+      appState.tasks = appState.tasks.filter(t => t.id !== taskId);
+      queueLiveSync();
+      showToast('Task removed');
+    }
+
+    function moveTaskNext(taskId) {
+      const order = ['urgent_important', 'not_urgent_important', 'urgent_not_important', 'not_urgent_not_important'];
+      const t = appState.tasks.find(i => i.id === taskId);
+      if (!t) return;
+      const cur = order.indexOf(t.quadrant);
+      t.quadrant = order[(cur + 1) % order.length];
+      queueLiveSync();
+    }
+
+    function shareTaskWhatsApp(taskId) {
+      const t = appState.tasks.find(i => i.id === taskId);
+      if (!t) return;
+      const msg = `*Task:* ${t.text}\n*Quadrant:* ${t.quadrant.replace(/_/g, ' ').toUpperCase()}\n*Due:* ${t.dueDate ? formatTime(t.dueDate) : 'None'}`;
+      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function handleDragStart(e, taskId) {
+      draggedTaskId = taskId;
+      e.dataTransfer.setData('text/plain', taskId);
+      e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.currentTarget.classList.add('drag-over-active');
+    }
+
+    function handleDragLeave(e) {
+      e.currentTarget.classList.remove('drag-over-active');
+    }
+
+    function handleDrop(e, targetQuadrant) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('drag-over-active');
+      if (!draggedTaskId) return;
+
+      const t = appState.tasks.find(i => i.id === draggedTaskId);
+      if (t && t.quadrant !== targetQuadrant) {
+        t.quadrant = targetQuadrant;
+        queueLiveSync();
+      }
+      draggedTaskId = null;
+    }
+
+    function openHistoryModal() {
+      renderHistoryList();
+      document.getElementById('historyModal').classList.remove('hidden');
+    }
+
+    function closeHistoryModal() {
+      document.getElementById('historyModal').classList.add('hidden');
+    }
+
+    function renderHistoryList() {
+      const container = document.getElementById('historyListContainer');
+      const q = (document.getElementById('historyFilterInput')?.value || '').toLowerCase().trim();
+
+      let list = [...appState.history];
+      if (q) {
+        list = list.filter(h => h.text.toLowerCase().includes(q));
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 text-stone-400 text-xs">
+            <i class="fa-solid fa-box-archive text-2xl mb-1.5 opacity-40"></i>
+            <p>No completed history records found.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(item => `
+        <div class="bg-stone-50 border border-stone-200 rounded-xl p-2.5 flex flex-col gap-1.5">
+          <div class="flex items-start justify-between gap-2">
+            <span class="text-xs font-semibold text-stone-700 line-through opacity-70 leading-snug break-words flex-1">
+              ${escapeHtml(item.text)}
+            </span>
+            <div class="flex items-center gap-1 shrink-0">
+              <button onclick="restoreHistoryTask('${item.id}')" title="Restore to Matrix" class="w-6 h-6 rounded bg-white border border-stone-200 text-stone-600 hover:text-emerald-600 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-rotate-left"></i>
+              </button>
+              <button onclick="deleteHistoryTask('${item.id}')" title="Delete permanently" class="w-6 h-6 rounded bg-white border border-stone-200 text-stone-600 hover:text-rose-600 flex items-center justify-center text-xs">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-[10px] text-stone-400 border-t border-stone-200/50 pt-1">
+            <span>Created: ${formatTime(item.createdAt)}</span>
+            <span class="text-emerald-600 font-semibold">Done: ${formatTime(item.completedAt)}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function restoreHistoryTask(id) {
+      const idx = appState.history.findIndex(h => h.id === id);
+      if (idx !== -1) {
+        const [task] = appState.history.splice(idx, 1);
+        task.completed = false;
+        task.completedAt = null;
+        appState.tasks.unshift(task);
+        queueLiveSync();
+        renderHistoryList();
+        showToast('Restored back to Matrix');
+      }
+    }
+
+    function deleteHistoryTask(id) {
+      appState.history = appState.history.filter(h => h.id !== id);
+      queueLiveSync();
+      renderHistoryList();
+    }
+
+    function clearAllHistory() {
+      if (appState.history.length === 0) return;
+      appState.history = [];
+      queueLiveSync();
+      renderHistoryList();
+      showToast('History cleared');
+    }
+
+    function openSettingsModal() {
+      document.getElementById('settingsModal').classList.remove('hidden');
+      if (isUnlocked) showProtectedFields();
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').classList.add('hidden');
+      document.getElementById('masterError').classList.add('hidden');
+    }
+
+    function verifyMasterPassword() {
+      const entered = document.getElementById('masterPassInput').value;
+      if (entered === MASTER_PASS) {
+        isUnlocked = true;
+        document.getElementById('masterGate').classList.add('hidden');
+        showProtectedFields();
+        showToast('Unlocked Master Settings');
+      } else {
+        document.getElementById('masterError').classList.remove('hidden');
+      }
+    }
+
+    function showProtectedFields() {
+      const formArea = document.getElementById('protectedForm');
+      formArea.classList.remove('opacity-40', 'pointer-events-none');
+      document.getElementById('githubTokenInput').value = getStoredToken();
+      document.getElementById('limit_urgent_important').value = appState.limits.urgent_important || 0;
+      document.getElementById('limit_not_urgent_important').value = appState.limits.not_urgent_important || 0;
+      document.getElementById('limit_urgent_not_important').value = appState.limits.urgent_not_important || 0;
+      document.getElementById('limit_not_urgent_not_important').value = appState.limits.not_urgent_not_important || 0;
+    }
+
+    function saveSettingsForm() {
+      const token = document.getElementById('githubTokenInput').value.trim();
+      setStoredToken(token);
+
+      appState.limits = {
+        urgent_important: parseInt(document.getElementById('limit_urgent_important').value, 10) || 0,
+        not_urgent_important: parseInt(document.getElementById('limit_not_urgent_important').value, 10) || 0,
+        urgent_not_important: parseInt(document.getElementById('limit_urgent_not_important').value, 10) || 0,
+        not_urgent_not_important: parseInt(document.getElementById('limit_not_urgent_not_important').value, 10) || 0
+      };
+
+      closeSettingsModal();
+      queueLiveSync();
+      pullGitHubData(true);
+    }
+
+    function speakQuadrant(qKey) {
+      if (!('speechSynthesis' in window)) {
+        showToast('Speech not supported', 'error');
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const items = appState.tasks.filter(t => t.quadrant === qKey);
+      if (items.length === 0) {
+        window.speechSynthesis.speak(new SpeechSynthesisUtterance('No tasks in this quadrant.'));
+        return;
+      }
+
+      const qTitle = qKey.replace(/_/g, ' ');
+      const textToRead = `${qTitle}: ` + items.map((t, i) => `${i + 1}. ${t.text}`).join('. ');
+      const utterance = new SpeechSynthesisUtterance(textToRead);
+      utterance.rate = 1.0;
+      window.speechSynthesis.speak(utterance);
+      showToast('Reading out tasks...', 'sync');
+    }
+
+    function toggleSpeechRecognition() {
+      const SpeechClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechClass) {
+        showToast('Voice typing not available in this browser', 'error');
+        return;
+      }
+
+      if (isListening) {
+        stopSpeechRecognition();
+        return;
+      }
+
+      recognitionInstance = new SpeechClass();
+      recognitionInstance.continuous = false;
+      recognitionInstance.interimResults = false;
+      recognitionInstance.lang = 'en-IN'; // Works effectively for Hinglish & Hindi
+
+      recognitionInstance.onstart = () => {
+        isListening = true;
+        document.getElementById('micIcon').className = 'fa-solid fa-waveform text-rose-600 animate-pulse text-sm';
+        showToast('Listening... Speak now', 'sync');
+      };
+
+      recognitionInstance.onresult = (e) => {
+        const transcript = e.results[0][0].transcript;
+        const input = document.getElementById('taskContentInput');
+        input.value = (input.value ? input.value + ' ' : '') + transcript;
+      };
+
+      recognitionInstance.onerror = () => stopSpeechRecognition();
+      recognitionInstance.onend = () => stopSpeechRecognition();
+
+      recognitionInstance.start();
+    }
+
+    function stopSpeechRecognition() {
+      isListening = false;
+      document.getElementById('micIcon').className = 'fa-solid fa-microphone text-stone-400 text-sm';
+      if (recognitionInstance) {
+        try { recognitionInstance.stop(); } catch (err) {}
+      }
+    }
+
+    function toggleWidgetMode() {
+      document.body.classList.toggle('widget-mode');
+      const isWidget = document.body.classList.contains('widget-mode');
+      showToast(isWidget ? 'Widget View Enabled' : 'Standard View Enabled');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, function(m) {
+        switch (m) {
+          case '&': return '&amp;';
+          case '<': return '&lt;';
+          case '>': return '&gt;';
+          case '"': return '&quot;';
+          case "'": return '&#039;';
+        }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Check for ?view=widget query param (for APK/Widget embed)
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('view') === 'widget') {
+        document.body.classList.add('widget-mode');
+      }
+
+      loadLocal();
+
+      // Seed initial tasks matching user reference if completely empty
+      if (appState.tasks.length === 0 && appState.history.length === 0) {
+        appState.tasks = [
+          {
+            id: 'demo_1',
+            text: 'Janta Bank bhojha utarna',
+            quadrant: 'not_urgent_important',
+            createdAt: new Date().toISOString(),
+            dueDate: null,
+            completed: false,
+            completedAt: null
+          },
+          {
+            id: 'demo_2',
+            text: 'Yono apply mummy',
+            quadrant: 'not_urgent_important',
+            createdAt: new Date().toISOString(),
+            dueDate: null,
+            completed: false,
+            completedAt: null
+          },
+          {
+            id: 'demo_3',
+            text: 'paise jama hone ke baad 50k mummy ko saalbhar ka dena',
+            quadrant: 'not_urgent_important',
+            createdAt: new Date().toISOString(),
+            dueDate: null,
+            completed: false,
+            completedAt: null
+          },
+          {
+            id: 'demo_4',
+            text: 'archit bhiya se 0urana paisa',
+            quadrant: 'urgent_not_important',
+            createdAt: new Date().toISOString(),
+            dueDate: null,
+            completed: false,
+            completedAt: null
+          },
+          {
+            id: 'demo_5',
+            text: 'aechitr bhiya se 2re order ka paisa',
+            quadrant: 'urgent_not_important',
+            createdAt: new Date().toISOString(),
+            dueDate: null,
+            completed: false,
+            completedAt: null
+          }
+        ];
+      }
+
+      renderAllQuadrants();
+      renderHistoryList();
+
+      // Initial live pull
+      pullGitHubData();
+
+      // Continuous Background Auto-Sync: polls GitHub every 15 seconds
+      setInterval(() => {
+        pullGitHubData();
+      }, 15000);
+
+      // Instant sync on window focus or internet reconnected
+      window.addEventListener('focus', () => pullGitHubData());
+      window.addEventListener('online', () => pullGitHubData());
+    });
+  </script>
+</body>
+</html>
