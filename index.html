@@ -126,7 +126,7 @@
       background: #1e293b;
     }
 
-    /* 2x2 Quadrant Grid */
+    /* 2x2 Matrix Grid */
     .matrix-grid {
       flex: 1;
       display: grid;
@@ -228,7 +228,7 @@
       background: #070d19;
       border: 1px solid #334155;
       color: #fff;
-      padding: 4px 6px;
+      padding: 5px 6px;
       border-radius: 4px;
       font-size: 0.75rem;
       outline: none;
@@ -238,7 +238,7 @@
       background: #2563eb;
       border: none;
       color: white;
-      padding: 4px 8px;
+      padding: 5px 9px;
       border-radius: 4px;
       font-size: 0.72rem;
       font-weight: 600;
@@ -246,7 +246,7 @@
       flex-shrink: 0;
     }
 
-    /* Task List */
+    /* Tasks List */
     .task-list {
       flex: 1;
       overflow-y: auto;
@@ -460,10 +460,9 @@
     <div class="header-actions">
       <div class="sync-status" id="syncStatus" title="GitHub Status">
         <span class="status-dot" id="syncDot"></span>
-        <span id="syncText">No Token</span>
+        <span id="syncText">Sync</span>
       </div>
 
-      <button class="btn-icon" id="btnSyncNow" title="Sync Live"><i class="fa-solid fa-rotate"></i></button>
       <button class="btn-icon" id="btnPinWidget" title="Install App to Homescreen"><i class="fa-solid fa-arrow-down-to-square"></i></button>
       <button class="btn-icon" id="btnHistory" title="History"><i class="fa-solid fa-clock-rotate-left"></i></button>
       <button class="btn-icon" id="btnBackup" title="Backup & Restore"><i class="fa-solid fa-database"></i></button>
@@ -662,7 +661,7 @@
       document.body.classList.add('widget-mode');
     }
 
-    // Dynamic Manifest with valid 192x192 and 512x512 SVG Data Icons for Chrome PWA Installation
+    // Dynamic Manifest
     const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#070d19"/><rect x="40" y="40" width="200" height="200" rx="20" fill="#fef08a"/><rect x="272" y="40" width="200" height="200" rx="20" fill="#fecdd3"/><rect x="40" y="272" width="200" height="200" rx="20" fill="#cffafe"/><rect x="272" y="272" width="200" height="200" rx="20" fill="#bbf7d0"/></svg>`;
     const iconUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(iconSvg);
 
@@ -686,10 +685,10 @@
     manifestLink.href = URL.createObjectURL(manifestBlob);
     document.head.appendChild(manifestLink);
 
-    // Register Service Worker for PWA
+    // Register Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(e => console.log('SW register note:', e));
+        navigator.serviceWorker.register('./sw.js').catch(e => console.log('SW note:', e));
       });
     }
 
@@ -712,7 +711,7 @@
       }
     };
 
-    // Audio chime player
+    // Audio Chime
     function playChime() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1020,6 +1019,7 @@
       return localStorage.getItem("gh_repo_vault") || GITHUB_REPO_DEFAULT;
     }
 
+    // ZERO-CLICK AUTO SYNC ENGINE
     async function syncFromGitHub() {
       const token = getGitHubToken();
       const repo = getGitHubRepo();
@@ -1027,13 +1027,17 @@
       const text = document.getElementById('syncText');
 
       if (!token) {
-        dot.className = "status-dot";
-        text.innerText = "No Token";
+        if (dot && text) {
+          dot.className = "status-dot";
+          text.innerText = "No Token";
+        }
         return;
       }
 
-      dot.className = "status-dot syncing";
-      text.innerText = "Syncing...";
+      if (dot && text) {
+        dot.className = "status-dot syncing";
+        text.innerText = "Syncing...";
+      }
 
       try {
         const res = await fetch(`https://api.github.com/repos/${repo}/contents/${DATA_FILE_PATH}`, {
@@ -1052,17 +1056,23 @@
             state.history = content.history || [];
             saveLocal();
           }
-          dot.className = "status-dot synced";
-          text.innerText = "Synced";
+          if (dot && text) {
+            dot.className = "status-dot synced";
+            text.innerText = "Synced";
+          }
         } else if (res.status === 404) {
           await pushToGitHub();
         } else {
-          dot.className = "status-dot error";
-          text.innerText = "Error";
+          if (dot && text) {
+            dot.className = "status-dot error";
+            text.innerText = "Error";
+          }
         }
       } catch (err) {
-        dot.className = "status-dot error";
-        text.innerText = "Offline";
+        if (dot && text) {
+          dot.className = "status-dot error";
+          text.innerText = "Offline";
+        }
       }
     }
 
@@ -1073,8 +1083,10 @@
 
       const dot = document.getElementById('syncDot');
       const text = document.getElementById('syncText');
-      dot.className = "status-dot syncing";
-      text.innerText = "Pushing...";
+      if (dot && text) {
+        dot.className = "status-dot syncing";
+        text.innerText = "Pushing...";
+      }
 
       const payload = {
         tasks: state.tasks,
@@ -1083,7 +1095,7 @@
       };
 
       const bodyData = {
-        message: "Update tasks via My Eisenhower Matrix",
+        message: "Auto-sync via My Eisenhower Matrix",
         content: btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))))
       };
       if (state.sha) bodyData.sha = state.sha;
@@ -1102,27 +1114,61 @@
         if (res.ok) {
           const resJson = await res.json();
           state.sha = resJson.content.sha;
-          dot.className = "status-dot synced";
-          text.innerText = "Synced";
+          if (dot && text) {
+            dot.className = "status-dot synced";
+            text.innerText = "Synced";
+          }
         } else {
-          dot.className = "status-dot error";
-          text.innerText = "Conflict";
+          if (dot && text) {
+            dot.className = "status-dot error";
+            text.innerText = "Conflict";
+          }
         }
       } catch (e) {
-        dot.className = "status-dot error";
-        text.innerText = "Fail";
+        if (dot && text) {
+          dot.className = "status-dot error";
+          text.innerText = "Fail";
+        }
       }
     }
 
+    // Debounced Push: 1 second ke gap ke baad direct save
     let syncTimer = null;
     function triggerDebouncedSync() {
       clearTimeout(syncTimer);
-      syncTimer = setTimeout(pushToGitHub, 1200);
+      const dot = document.getElementById('syncDot');
+      const text = document.getElementById('syncText');
+      if (dot && text) {
+        dot.className = "status-dot syncing";
+        text.innerText = "Saving...";
+      }
+      syncTimer = setTimeout(pushToGitHub, 1000);
     }
 
-    document.getElementById('btnSyncNow').onclick = () => syncFromGitHub();
+    // Auto-fetch on Focus / Screen Unlock
+    window.addEventListener('focus', () => {
+      syncFromGitHub();
+    });
 
-    // Reminder Checker Loop
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        syncFromGitHub();
+      }
+    });
+
+    // Auto-fetch on Internet Reconnect
+    window.addEventListener('online', () => {
+      syncFromGitHub();
+    });
+
+    // Auto Polling in background every 15s
+    setInterval(() => {
+      if (navigator.onLine && document.visibilityState === 'visible') {
+        syncFromGitHub();
+      }
+    }, 15000);
+
+    // Reminder Loop (Every 30s)
     setInterval(() => {
       const now = new Date();
       state.tasks.forEach(t => {
@@ -1146,9 +1192,10 @@
     }, 30000);
 
     // Initial Load
-    loadLocal();
-    syncFromGitHub();
-    setInterval(syncFromGitHub, 20000);
+    window.addEventListener('DOMContentLoaded', () => {
+      loadLocal();
+      syncFromGitHub();
+    });
   </script>
 </body>
 </html>
