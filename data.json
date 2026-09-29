@@ -3,7 +3,7 @@
     {
       "id": "task_1790710235643_j98q",
       "text": "Rtyyff",
-      "quadrant": "urgent_important",
+      "quadrant": "not_urgent_important",
       "createdAt": "2026-09-29T19:30:35.643Z",
       "dueDate": null,
       "completed": false,
@@ -63,5 +63,5 @@
     "urgent_not_important": 0,
     "not_urgent_not_important": 0
   },
-  "lastUpdated": "2026-09-29T19:30:36.457Z"
+  "lastUpdated": "2026-09-29T19:31:03.211Z"
 }
