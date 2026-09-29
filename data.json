@@ -1,15 +1,6 @@
 {
   "tasks": [
     {
-      "id": "demo_2",
-      "text": "Yono apply mummy",
-      "quadrant": "not_urgent_important",
-      "createdAt": "2026-09-29T19:25:45.822Z",
-      "dueDate": null,
-      "completed": false,
-      "completedAt": null
-    },
-    {
       "id": "demo_4",
       "text": "archit bhiya se 0urana paisa",
       "quadrant": "urgent_not_important",
@@ -29,6 +20,15 @@
     }
   ],
   "history": [
+    {
+      "id": "demo_2",
+      "text": "Yono apply mummy",
+      "quadrant": "not_urgent_important",
+      "createdAt": "2026-09-29T19:25:45.822Z",
+      "dueDate": null,
+      "completed": true,
+      "completedAt": "2026-09-29T19:26:26.839Z"
+    },
     {
       "id": "demo_3",
       "text": "paise jama hone ke baad 50k mummy ko saalbhar ka dena",
@@ -54,5 +54,5 @@
     "urgent_not_important": 0,
     "not_urgent_not_important": 0
   },
-  "lastUpdated": "2026-09-29T19:26:26.314Z"
+  "lastUpdated": "2026-09-29T19:26:27.654Z"
 }
