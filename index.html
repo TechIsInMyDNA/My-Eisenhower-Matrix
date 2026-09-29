@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>My Eisenhower Matrix</title>
   
-  <!-- PWA Web Manifest (Inline Blob Ready) -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -18,7 +17,6 @@
       --card-bg: #0f172a;
       --border-subtle: #1e293b;
       
-      /* Distinct Quadrant Pastel Shades */
       --p1-header: #fef08a;
       --p1-text: #713f12;
       --p1-border: #eab308;
@@ -54,7 +52,7 @@
       overflow: hidden;
     }
 
-    /* Top Sleek Header */
+    /* Header */
     header {
       background: #0b1324;
       padding: 6px 10px;
@@ -128,7 +126,7 @@
       background: #1e293b;
     }
 
-    /* 2x2 Matrix Container */
+    /* 2x2 Quadrant Grid */
     .matrix-grid {
       flex: 1;
       display: grid;
@@ -209,7 +207,7 @@
       align-items: center;
     }
 
-    /* Fixed Inline Add Bar: No Cut-off */
+    /* Inline Add Bar */
     .inline-add-bar {
       display: none;
       padding: 4px;
@@ -226,7 +224,7 @@
 
     .inline-add-bar input {
       flex: 1;
-      min-width: 0; /* Prevents input from pushing button outside */
+      min-width: 0;
       background: #070d19;
       border: 1px solid #334155;
       color: #fff;
@@ -248,7 +246,7 @@
       flex-shrink: 0;
     }
 
-    /* Tasks Scroll Container */
+    /* Task List */
     .task-list {
       flex: 1;
       overflow-y: auto;
@@ -441,7 +439,6 @@
       color: #64748b;
     }
 
-    /* Homescreen Standalone View (?view=widget) */
     body.widget-mode header {
       display: none !important;
     }
@@ -467,7 +464,7 @@
       </div>
 
       <button class="btn-icon" id="btnSyncNow" title="Sync Live"><i class="fa-solid fa-rotate"></i></button>
-      <button class="btn-icon" id="btnPinWidget" title="Pin to Homescreen"><i class="fa-solid fa-arrow-down-to-square"></i></button>
+      <button class="btn-icon" id="btnPinWidget" title="Install App to Homescreen"><i class="fa-solid fa-arrow-down-to-square"></i></button>
       <button class="btn-icon" id="btnHistory" title="History"><i class="fa-solid fa-clock-rotate-left"></i></button>
       <button class="btn-icon" id="btnBackup" title="Backup & Restore"><i class="fa-solid fa-database"></i></button>
       <button class="btn-icon" id="btnSettings" title="GitHub Vault"><i class="fa-solid fa-gear"></i></button>
@@ -661,31 +658,48 @@
       activeTaskId: null
     };
 
-    // Auto-detect widget parameter
     if (new URLSearchParams(window.location.search).get('view') === 'widget') {
       document.body.classList.add('widget-mode');
     }
 
-    // PWA Manifest Dynamic Registration
-    const manifestBlob = new Blob([JSON.stringify({
+    // Dynamic Manifest with valid 192x192 and 512x512 SVG Data Icons for Chrome PWA Installation
+    const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#070d19"/><rect x="40" y="40" width="200" height="200" rx="20" fill="#fef08a"/><rect x="272" y="40" width="200" height="200" rx="20" fill="#fecdd3"/><rect x="40" y="272" width="200" height="200" rx="20" fill="#cffafe"/><rect x="272" y="272" width="200" height="200" rx="20" fill="#bbf7d0"/></svg>`;
+    const iconUrl = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(iconSvg);
+
+    const manifestData = {
       name: "My Eisenhower Matrix",
-      short_name: "Matrix",
-      start_url: window.location.href.split('?')[0] + "?view=widget",
+      short_name: "Eisenhower",
+      start_url: "./index.html",
+      scope: "./",
       display: "standalone",
       background_color: "#070d19",
-      theme_color: "#070d19"
-    })], {type: 'application/json'});
-    const manifestURL = URL.createObjectURL(manifestBlob);
-    const linkEl = document.createElement('link');
-    linkEl.rel = 'manifest';
-    linkEl.href = manifestURL;
-    document.head.appendChild(linkEl);
+      theme_color: "#070d19",
+      icons: [
+        { src: iconUrl, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
+        { src: iconUrl, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+      ]
+    };
+
+    const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+    const manifestLink = document.createElement('link');
+    manifestLink.rel = 'manifest';
+    manifestLink.href = URL.createObjectURL(manifestBlob);
+    document.head.appendChild(manifestLink);
+
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(e => console.log('SW register note:', e));
+      });
+    }
 
     // Install prompt handler
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
+      const pinBtn = document.getElementById('btnPinWidget');
+      if (pinBtn) pinBtn.style.color = '#38bdf8';
     });
 
     document.getElementById('btnPinWidget').onclick = async () => {
@@ -694,7 +708,7 @@
         const { outcome } = await deferredPrompt.userChoice;
         if (outcome === 'accepted') deferredPrompt = null;
       } else {
-        alert("Homescreen par widget bananey ke liye Browser menu (3 dots) me jakar 'Install App' ya 'Add to Home screen' select karein!");
+        alert("PWA ready! Chrome ke 3-dots menu par jaakar 'Install App' ya 'Add to Home screen' karein.");
       }
     };
 
@@ -777,7 +791,6 @@
       });
     }
 
-    // Inline Add Input
     function toggleInlineAdd(quad) {
       const bar = document.getElementById(`addBar-${quad}`);
       bar.classList.toggle('active');
@@ -812,7 +825,6 @@
       triggerDebouncedSync();
     }
 
-    // Task Complete Strikethrough
     function completeTask(id) {
       const card = document.getElementById(`card-${id}`);
       if (card) {
@@ -833,7 +845,6 @@
       }, 240);
     }
 
-    // Modals
     function openModal(id) { document.getElementById(id).classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
@@ -866,7 +877,6 @@
       closeModal('reminderModal');
     }
 
-    // History Actions
     document.getElementById('btnHistory').onclick = () => {
       const container = document.getElementById('historyListContainer');
       container.innerHTML = "";
@@ -910,7 +920,6 @@
       }
     }
 
-    // Export & Import Backup
     document.getElementById('btnBackup').onclick = () => openModal('backupModal');
 
     function exportBackup() {
@@ -954,7 +963,6 @@
       reader.readAsText(fileInput.files[0]);
     }
 
-    // Text to Speech
     function speakQuadrant(quad) {
       const list = state.tasks.filter(t => t.quadrant === quad);
       if (list.length === 0) {
@@ -968,7 +976,6 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    // GitHub Settings with Master Password Vault
     document.getElementById('btnSettings').onclick = () => {
       document.getElementById('vaultAuthStep').style.display = "block";
       document.getElementById('vaultConfigStep').style.display = "none";
@@ -1013,7 +1020,6 @@
       return localStorage.getItem("gh_repo_vault") || GITHUB_REPO_DEFAULT;
     }
 
-    // GitHub Live Sync Engine
     async function syncFromGitHub() {
       const token = getGitHubToken();
       const repo = getGitHubRepo();
@@ -1116,7 +1122,7 @@
 
     document.getElementById('btnSyncNow').onclick = () => syncFromGitHub();
 
-    // Reminder Checker Loop (Every 30s)
+    // Reminder Checker Loop
     setInterval(() => {
       const now = new Date();
       state.tasks.forEach(t => {
@@ -1139,7 +1145,7 @@
       });
     }, 30000);
 
-    // Initial load
+    // Initial Load
     loadLocal();
     syncFromGitHub();
     setInterval(syncFromGitHub, 20000);
