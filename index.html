@@ -205,7 +205,6 @@
       align-items: center;
     }
 
-    /* Inline Add Bar with Optional Reminder Toggle */
     .inline-add-container {
       display: none;
       flex-direction: column;
@@ -631,8 +630,12 @@
           <label>Repository (Owner/Repo)</label>
           <input type="text" id="vaultRepo" value="TechIsInMyDNA/My-Eisenhower-Matrix">
         </div>
+        <div class="form-group">
+          <label>Data Sync Branch (Pages re-deploy safe)</label>
+          <input type="text" id="vaultBranch" value="data">
+        </div>
         <div style="font-size:0.7rem; color:#38bdf8; display:flex; align-items:center; gap:5px;">
-          <i class="fa-solid fa-lock"></i> <span>data.json is AES-GCM 256-bit encrypted.</span>
+          <i class="fa-solid fa-lock"></i> <span>Auto-branch isolation: Pages will never re-deploy on sync.</span>
         </div>
         <button class="btn-primary" onclick="saveVaultConfig()"><i class="fa-solid fa-floppy-disk"></i> Save & Connect Live</button>
       </div>
@@ -708,6 +711,7 @@
   <script>
     const MASTER_PASS = "Shubham@144";
     const GITHUB_REPO_DEFAULT = "TechIsInMyDNA/My-Eisenhower-Matrix";
+    const GITHUB_BRANCH_DEFAULT = "data";
     const DATA_FILE_PATH = "data.json";
 
     let state = {
@@ -722,7 +726,7 @@
       document.body.classList.add('widget-mode');
     }
 
-    // --- AES-256 MILITARY GRADE ENCRYPTION CORE ---
+    // --- AES-256 ENCRYPTION CORE ---
     async function deriveAesKey(password, salt) {
       const enc = new TextEncoder();
       const keyMaterial = await crypto.subtle.importKey(
@@ -768,7 +772,7 @@
     }
 
     async function decryptData(cipherObject, password) {
-      if (!cipherObject.encrypted) return cipherObject; // Fallback if plain
+      if (!cipherObject.encrypted) return cipherObject;
 
       const salt = new Uint8Array(atob(cipherObject.salt).split("").map(c => c.charCodeAt(0)));
       const iv = new Uint8Array(atob(cipherObject.iv).split("").map(c => c.charCodeAt(0)));
@@ -1150,17 +1154,20 @@
         document.getElementById('vaultToken').value = atob(savedToken);
       }
       document.getElementById('vaultRepo').value = localStorage.getItem("gh_repo_vault") || GITHUB_REPO_DEFAULT;
+      document.getElementById('vaultBranch').value = localStorage.getItem("gh_branch_vault") || GITHUB_BRANCH_DEFAULT;
       document.getElementById('vaultAuthPass').value = "";
     }
 
     function saveVaultConfig() {
       const token = document.getElementById('vaultToken').value.trim();
       const repo = document.getElementById('vaultRepo').value.trim() || GITHUB_REPO_DEFAULT;
+      const branch = document.getElementById('vaultBranch').value.trim() || GITHUB_BRANCH_DEFAULT;
 
       if (token) localStorage.setItem("gh_pat_vault", btoa(token));
       localStorage.setItem("gh_repo_vault", repo);
+      localStorage.setItem("gh_branch_vault", branch);
 
-      alert("Settings saved! data.json is protected with AES-256.");
+      alert("Settings saved! data.json isolated to '" + branch + "' branch (No Pages Re-deployment).");
       closeModal('settingsModal');
       syncFromGitHub(true);
     }
@@ -1174,12 +1181,67 @@
       return localStorage.getItem("gh_repo_vault") || GITHUB_REPO_DEFAULT;
     }
 
-    // --- ENCRYPTED GITHUB SYNC ENGINE ---
+    function getGitHubBranch() {
+      return localStorage.getItem("gh_branch_vault") || GITHUB_BRANCH_DEFAULT;
+    }
+
+    // --- AUTO-INITIALIZE DATA BRANCH FROM MAIN (FIRST TIME SETUP) ---
+    async function ensureDataBranchExists(repo, branch, token) {
+      try {
+        const checkRes = await fetch(`https://api.github.com/repos/${repo}/branches/${branch}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/vnd.github.v3+json"
+          }
+        });
+        if (checkRes.status === 200) return true; // Branch already exists
+
+        // If branch does not exist, fetch default branch commit SHA
+        const repoRes = await fetch(`https://api.github.com/repos/${repo}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/vnd.github.v3+json"
+          }
+        });
+        const repoData = await repoRes.json();
+        const defaultBranch = repoData.default_branch || "main";
+
+        const refRes = await fetch(`https://api.github.com/repos/${repo}/git/ref/heads/${defaultBranch}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/vnd.github.v3+json"
+          }
+        });
+        const refData = await refRes.json();
+        const baseSha = refData.object.sha;
+
+        // Create new branch
+        const createRes = await fetch(`https://api.github.com/repos/${repo}/git/refs`, {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Accept": "application/vnd.github.v3+json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            ref: `refs/heads/${branch}`,
+            sha: baseSha
+          })
+        });
+        return createRes.ok;
+      } catch (e) {
+        console.warn("Branch check error:", e);
+        return false;
+      }
+    }
+
+    // --- ENCRYPTED GITHUB SYNC (PAGES SAFE ON DEDICATED BRANCH) ---
     async function syncFromGitHub(force = false) {
       if (state.isPushing && !force) return;
 
       const token = getGitHubToken();
       const repo = getGitHubRepo();
+      const branch = getGitHubBranch();
       const dot = document.getElementById('syncDot');
       const text = document.getElementById('syncText');
 
@@ -1192,7 +1254,7 @@
       }
 
       try {
-        const res = await fetch(`https://api.github.com/repos/${repo}/contents/${DATA_FILE_PATH}?_t=${Date.now()}`, {
+        const res = await fetch(`https://api.github.com/repos/${repo}/contents/${DATA_FILE_PATH}?ref=${branch}&_t=${Date.now()}`, {
           cache: "no-store",
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -1205,7 +1267,6 @@
           state.sha = json.sha;
           const rawContent = JSON.parse(decodeURIComponent(escape(atob(json.content))));
           
-          // Decrypt payload using Master Password
           const content = await decryptData(rawContent, MASTER_PASS);
 
           if (content.tasks) {
@@ -1236,6 +1297,7 @@
     async function pushToGitHub() {
       const token = getGitHubToken();
       const repo = getGitHubRepo();
+      const branch = getGitHubBranch();
       if (!token) return;
 
       state.isPushing = true;
@@ -1246,17 +1308,20 @@
         text.innerText = "Encrypting...";
       }
 
+      // First time check: make sure dedicated data branch exists
+      await ensureDataBranchExists(repo, branch, token);
+
       const payload = {
         tasks: state.tasks,
         history: state.history,
         updatedAt: new Date().toISOString()
       };
 
-      // Encrypt payload before pushing to GitHub
       const encryptedPayload = await encryptData(payload, MASTER_PASS);
 
       const bodyData = {
-        message: "Encrypted sync via My Eisenhower Matrix",
+        message: "Encrypted sync [skip ci]",
+        branch: branch,
         content: btoa(unescape(encodeURIComponent(JSON.stringify(encryptedPayload, null, 2))))
       };
       if (state.sha) bodyData.sha = state.sha;
