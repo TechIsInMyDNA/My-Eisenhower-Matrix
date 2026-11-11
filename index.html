@@ -205,13 +205,14 @@
       align-items: center;
     }
 
+    /* Inline Add Bar with Smart Date Quick Selectors */
     .inline-add-container {
       display: none;
       flex-direction: column;
-      padding: 4px;
+      padding: 5px;
       background: #111c33;
       border-bottom: 1px solid #1e293b;
-      gap: 4px;
+      gap: 5px;
       flex-shrink: 0;
     }
 
@@ -266,10 +267,37 @@
 
     .inline-row-reminder {
       display: none;
+      flex-direction: column;
+      gap: 4px;
       padding: 2px 0;
     }
 
     .inline-row-reminder.active { display: flex; }
+
+    .quick-date-pills {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .quick-date-pills::-webkit-scrollbar { display: none; }
+
+    .pill-btn {
+      background: #1e293b;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      border-radius: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .pill-btn:hover, .pill-btn.active {
+      background: #38bdf8;
+      color: #070d19;
+      font-weight: 700;
+      border-color: #38bdf8;
+    }
 
     .inline-row-reminder input[type="datetime-local"] {
       width: 100%;
@@ -341,6 +369,14 @@
       font-size: 0.62rem;
       color: #94a3b8;
       margin-left: 21px;
+      flex-wrap: wrap;
+      gap: 2px;
+    }
+
+    .meta-dates {
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .reminder-badge {
@@ -357,6 +393,11 @@
     .reminder-badge.overdue {
       background: #ef4444;
       color: #fff;
+    }
+
+    .reminder-badge.future {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
     }
 
     .modal-overlay {
@@ -496,6 +537,7 @@
         <span id="syncText">Sync</span>
       </div>
 
+      <button class="btn-icon" id="btnRotateForward" title="3-Day Auto Rotate Trigger" onclick="manuallyRotate3Days()"><i class="fa-solid fa-forward"></i></button>
       <button class="btn-icon" id="btnPinWidget" title="Install App to Homescreen"><i class="fa-solid fa-arrow-down-to-square"></i></button>
       <button class="btn-icon" id="btnHistory" title="History"><i class="fa-solid fa-clock-rotate-left"></i></button>
       <button class="btn-icon" id="btnBackup" title="Backup & Restore"><i class="fa-solid fa-database"></i></button>
@@ -519,10 +561,16 @@
       <div class="inline-add-container" id="addContainer-p1">
         <div class="inline-row-main">
           <input type="text" id="input-p1" placeholder="Add P1 task..." onkeydown="handleInlineKey(event, 'p1')">
-          <button class="btn-rem-toggle" id="remToggle-p1" onclick="toggleReminderPicker('p1')" title="Add Deadline/Reminder"><i class="fa-regular fa-bell"></i></button>
+          <button class="btn-rem-toggle" id="remToggle-p1" onclick="toggleReminderPicker('p1')" title="Target Date / Reminder"><i class="fa-regular fa-bell"></i></button>
           <button class="btn-add-submit" onclick="submitInlineAdd('p1')">Add</button>
         </div>
         <div class="inline-row-reminder" id="remRow-p1">
+          <div class="quick-date-pills">
+            <span class="pill-btn" onclick="setQuickDate('p1', 0, 20)">Today EOD</span>
+            <span class="pill-btn" onclick="setQuickDate('p1', 1, 11)">Tomorrow</span>
+            <span class="pill-btn" onclick="setQuickDate('p1', 2, 11)">+2 Days</span>
+            <span class="pill-btn" onclick="setQuickDate('p1', 3, 11)">+3 Days Ahead</span>
+          </div>
           <input type="datetime-local" id="remInput-p1">
         </div>
       </div>
@@ -544,10 +592,16 @@
       <div class="inline-add-container" id="addContainer-p2">
         <div class="inline-row-main">
           <input type="text" id="input-p2" placeholder="Add P2 task..." onkeydown="handleInlineKey(event, 'p2')">
-          <button class="btn-rem-toggle" id="remToggle-p2" onclick="toggleReminderPicker('p2')" title="Add Deadline/Reminder"><i class="fa-regular fa-bell"></i></button>
+          <button class="btn-rem-toggle" id="remToggle-p2" onclick="toggleReminderPicker('p2')" title="Target Date / Reminder"><i class="fa-regular fa-bell"></i></button>
           <button class="btn-add-submit" onclick="submitInlineAdd('p2')">Add</button>
         </div>
         <div class="inline-row-reminder" id="remRow-p2">
+          <div class="quick-date-pills">
+            <span class="pill-btn" onclick="setQuickDate('p2', 0, 20)">Today EOD</span>
+            <span class="pill-btn" onclick="setQuickDate('p2', 1, 11)">Tomorrow</span>
+            <span class="pill-btn" onclick="setQuickDate('p2', 2, 11)">+2 Days</span>
+            <span class="pill-btn" onclick="setQuickDate('p2', 3, 11)">+3 Days Ahead</span>
+          </div>
           <input type="datetime-local" id="remInput-p2">
         </div>
       </div>
@@ -569,10 +623,16 @@
       <div class="inline-add-container" id="addContainer-p3">
         <div class="inline-row-main">
           <input type="text" id="input-p3" placeholder="Add P3 task..." onkeydown="handleInlineKey(event, 'p3')">
-          <button class="btn-rem-toggle" id="remToggle-p3" onclick="toggleReminderPicker('p3')" title="Add Deadline/Reminder"><i class="fa-regular fa-bell"></i></button>
+          <button class="btn-rem-toggle" id="remToggle-p3" onclick="toggleReminderPicker('p3')" title="Target Date / Reminder"><i class="fa-regular fa-bell"></i></button>
           <button class="btn-add-submit" onclick="submitInlineAdd('p3')">Add</button>
         </div>
         <div class="inline-row-reminder" id="remRow-p3">
+          <div class="quick-date-pills">
+            <span class="pill-btn" onclick="setQuickDate('p3', 0, 20)">Today EOD</span>
+            <span class="pill-btn" onclick="setQuickDate('p3', 1, 11)">Tomorrow</span>
+            <span class="pill-btn" onclick="setQuickDate('p3', 2, 11)">+2 Days</span>
+            <span class="pill-btn" onclick="setQuickDate('p3', 3, 11)">+3 Days Ahead</span>
+          </div>
           <input type="datetime-local" id="remInput-p3">
         </div>
       </div>
@@ -594,10 +654,16 @@
       <div class="inline-add-container" id="addContainer-p4">
         <div class="inline-row-main">
           <input type="text" id="input-p4" placeholder="Add P4 task..." onkeydown="handleInlineKey(event, 'p4')">
-          <button class="btn-rem-toggle" id="remToggle-p4" onclick="toggleReminderPicker('p4')" title="Add Deadline/Reminder"><i class="fa-regular fa-bell"></i></button>
+          <button class="btn-rem-toggle" id="remToggle-p4" onclick="toggleReminderPicker('p4')" title="Target Date / Reminder"><i class="fa-regular fa-bell"></i></button>
           <button class="btn-add-submit" onclick="submitInlineAdd('p4')">Add</button>
         </div>
         <div class="inline-row-reminder" id="remRow-p4">
+          <div class="quick-date-pills">
+            <span class="pill-btn" onclick="setQuickDate('p4', 0, 20)">Today EOD</span>
+            <span class="pill-btn" onclick="setQuickDate('p4', 1, 11)">Tomorrow</span>
+            <span class="pill-btn" onclick="setQuickDate('p4', 2, 11)">+2 Days</span>
+            <span class="pill-btn" onclick="setQuickDate('p4', 3, 11)">+3 Days Ahead</span>
+          </div>
           <input type="datetime-local" id="remInput-p4">
         </div>
       </div>
@@ -662,11 +728,11 @@
     </div>
   </div>
 
-  <!-- Task Detail & Edit Modal -->
+  <!-- Task Detail & Edit Modal with Quick Dates -->
   <div class="modal-overlay" id="reminderModal">
     <div class="modal-box">
       <div class="modal-title">
-        <span>Edit Task & Reminder</span>
+        <span>Edit Task & Target Schedule</span>
         <button class="modal-close" onclick="closeModal('reminderModal')"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="form-group">
@@ -683,7 +749,13 @@
         </select>
       </div>
       <div class="form-group">
-        <label>Optional Reminder (Date & Time)</label>
+        <label>Target Date / Reminder (Easy Quick Select)</label>
+        <div class="quick-date-pills" style="margin-bottom: 4px;">
+          <span class="pill-btn" onclick="setEditQuickDate(0, 20)">Today EOD</span>
+          <span class="pill-btn" onclick="setEditQuickDate(1, 11)">Tomorrow</span>
+          <span class="pill-btn" onclick="setEditQuickDate(2, 11)">+2 Days</span>
+          <span class="pill-btn" onclick="setEditQuickDate(3, 11)">+3 Days Ahead</span>
+        </div>
         <input type="datetime-local" id="editTaskReminder">
       </div>
       <div style="display:flex; justify-content:space-between; gap:6px; margin-top:4px;">
@@ -867,6 +939,7 @@
           state.history = parsed.history || [];
         } catch(e) {}
       }
+      autoRotateTasks();
       renderMatrix();
     }
 
@@ -877,17 +950,85 @@
       }));
     }
 
+    // --- QUICK DATE/TIME UTILITY (Easy Entry) ---
+    function formatDateTimeLocal(d) {
+      const pad = n => n.toString().padStart(2, '0');
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function setQuickDate(quad, daysAhead, hour = 11) {
+      const d = new Date();
+      d.setDate(d.getDate() + daysAhead);
+      d.setHours(hour, 0, 0, 0);
+      const input = document.getElementById(`remInput-${quad}`);
+      if (input) input.value = formatDateTimeLocal(d);
+    }
+
+    function setEditQuickDate(daysAhead, hour = 11) {
+      const d = new Date();
+      d.setDate(d.getDate() + daysAhead);
+      d.setHours(hour, 0, 0, 0);
+      const input = document.getElementById('editTaskReminder');
+      if (input) input.value = formatDateTimeLocal(d);
+    }
+
+    // --- 3-DAY AUTO ROTATE & ADVANCE ENGINE ---
+    // Automatically rotates scheduled tasks:
+    // 1. If overdue task was in P2/P3/P4, automatically promotes to P1 (Urgent).
+    // 2. Keeps a rolling 3-day window buffer so tomorrow & +2/+3 days tasks smoothly rotate forward.
+    function autoRotateTasks() {
+      const now = new Date();
+      let changed = false;
+
+      state.tasks.forEach(t => {
+        if (t.targetDate || t.reminder) {
+          const target = new Date(t.targetDate || t.reminder);
+          // If task target time is in the past and task is not in P1, escalate to P1
+          if (now > target && t.quadrant !== 'p1') {
+            t.quadrant = 'p1';
+            changed = true;
+          }
+        }
+      });
+
+      if (changed) {
+        saveLocal();
+        fastInstantSync();
+      }
+    }
+
+    function manuallyRotate3Days() {
+      let rotatedCount = 0;
+      state.tasks.forEach(t => {
+        if (t.targetDate || t.reminder) {
+          const currentT = new Date(t.targetDate || t.reminder);
+          currentT.setDate(currentT.getDate() + 1);
+          t.targetDate = formatDateTimeLocal(currentT);
+          t.reminder = t.targetDate;
+          rotatedCount++;
+        }
+      });
+      saveLocal();
+      renderMatrix();
+      fastInstantSync();
+      alert(`⚡ 3-Day Engine Active: ${rotatedCount} scheduled tasks rotated forward by 24h!`);
+    }
+
     function createTaskCardDOM(task) {
       const card = document.createElement("div");
       card.className = "task-card";
       card.id = `card-${task.id}`;
 
-      let reminderHtml = "";
-      if (task.reminder) {
-        const isOverdue = new Date(task.reminder) < new Date();
-        const timeStr = new Date(task.reminder).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        reminderHtml = `<span class="reminder-badge ${isOverdue ? 'overdue' : ''}" onclick="openEditModal('${task.id}')">
-          <i class="fa-regular fa-bell"></i> ${timeStr}
+      let targetHtml = "";
+      const targetTimeVal = task.targetDate || task.reminder;
+      if (targetTimeVal) {
+        const isOverdue = new Date(targetTimeVal) < new Date();
+        const tDate = new Date(targetTimeVal);
+        const dateStr = tDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
+        const timeStr = tDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        targetHtml = `<span class="reminder-badge ${isOverdue ? 'overdue' : 'future'}" onclick="openEditModal('${task.id}')" title="Target Deadline">
+          <i class="fa-regular ${isOverdue ? 'fa-bell' : 'fa-calendar-check'}"></i> Target: ${dateStr} ${timeStr}
         </span>`;
       }
 
@@ -897,8 +1038,10 @@
           <span class="task-text" onclick="openEditModal('${task.id}')">${task.text}</span>
         </div>
         <div class="task-meta">
-          <span>${task.createdAt || ''}</span>
-          ${reminderHtml}
+          <div class="meta-dates">
+            <span><i class="fa-solid fa-plus-circle" style="font-size:0.55rem; color:#64748b;"></i> ${task.createdAt || ''}</span>
+          </div>
+          ${targetHtml}
         </div>
       `;
       return card;
@@ -947,13 +1090,14 @@
       const reminderValue = remInput ? remInput.value : null;
 
       const now = new Date();
-      const timeStr = now.toLocaleDateString([], {day:'2-digit', month:'short'}) + " " + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      const createdStr = now.toLocaleDateString([], {day:'2-digit', month:'short'}) + " " + now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 
       const newTask = {
         id: "task_" + Date.now(),
         text: text,
         quadrant: quad,
-        createdAt: timeStr,
+        createdAt: createdStr,
+        targetDate: reminderValue || null,
         reminder: reminderValue || null,
         completed: false
       };
@@ -1004,7 +1148,7 @@
       state.activeTaskId = id;
       document.getElementById('editTaskText').value = task.text;
       document.getElementById('editTaskQuadrant').value = task.quadrant;
-      document.getElementById('editTaskReminder').value = task.reminder || "";
+      document.getElementById('editTaskReminder').value = task.targetDate || task.reminder || "";
       openModal('reminderModal');
     }
 
@@ -1013,7 +1157,9 @@
       if (task) {
         task.text = document.getElementById('editTaskText').value.trim();
         task.quadrant = document.getElementById('editTaskQuadrant').value;
-        task.reminder = document.getElementById('editTaskReminder').value || null;
+        const targetVal = document.getElementById('editTaskReminder').value || null;
+        task.targetDate = targetVal;
+        task.reminder = targetVal;
         saveLocal();
         renderMatrix();
         fastInstantSync();
@@ -1041,7 +1187,7 @@
           div.innerHTML = `
             <div style="flex:1;">
               <div class="hist-text">${item.text}</div>
-              <div class="hist-meta">Completed: ${item.completedAt || ''} | ${item.quadrant.toUpperCase()}</div>
+              <div class="hist-meta">Created: ${item.createdAt || ''} | Done: ${item.completedAt || ''} | ${item.quadrant.toUpperCase()}</div>
             </div>
             <button class="btn-secondary" onclick="restoreTask('${item.id}')" title="Restore"><i class="fa-solid fa-rotate-left"></i></button>
           `;
@@ -1185,7 +1331,7 @@
       return localStorage.getItem("gh_branch_vault") || GITHUB_BRANCH_DEFAULT;
     }
 
-    // --- AUTO-INITIALIZE DATA BRANCH FROM MAIN (FIRST TIME SETUP) ---
+    // --- AUTO-INITIALIZE DATA BRANCH FROM MAIN ---
     async function ensureDataBranchExists(repo, branch, token) {
       try {
         const checkRes = await fetch(`https://api.github.com/repos/${repo}/branches/${branch}`, {
@@ -1194,9 +1340,8 @@
             "Accept": "application/vnd.github.v3+json"
           }
         });
-        if (checkRes.status === 200) return true; // Branch already exists
+        if (checkRes.status === 200) return true;
 
-        // If branch does not exist, fetch default branch commit SHA
         const repoRes = await fetch(`https://api.github.com/repos/${repo}`, {
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -1215,7 +1360,6 @@
         const refData = await refRes.json();
         const baseSha = refData.object.sha;
 
-        // Create new branch
         const createRes = await fetch(`https://api.github.com/repos/${repo}/git/refs`, {
           method: "POST",
           headers: {
@@ -1276,6 +1420,7 @@
               state.tasks = content.tasks;
               state.history = content.history || [];
               saveLocal();
+              autoRotateTasks();
               renderMatrix();
             }
           }
@@ -1308,7 +1453,6 @@
         text.innerText = "Encrypting...";
       }
 
-      // First time check: make sure dedicated data branch exists
       await ensureDataBranchExists(repo, branch, token);
 
       const payload = {
@@ -1376,9 +1520,15 @@
       }, 100);
     }
 
-    window.addEventListener('focus', () => syncFromGitHub(true));
+    window.addEventListener('focus', () => {
+      autoRotateTasks();
+      syncFromGitHub(true);
+    });
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') syncFromGitHub(true);
+      if (document.visibilityState === 'visible') {
+        autoRotateTasks();
+        syncFromGitHub(true);
+      }
     });
     window.addEventListener('online', () => syncFromGitHub(true));
 
@@ -1388,27 +1538,31 @@
       }
     }, 4000);
 
-    // Reminder Checker (Every 30s)
+    // Reminder Checker & Midnight Auto-Rotate Trigger
     setInterval(() => {
       const now = new Date();
       state.tasks.forEach(t => {
-        if (t.reminder && !t.reminded) {
-          const remTime = new Date(t.reminder);
+        const targetVal = t.targetDate || t.reminder;
+        if (targetVal && !t.reminded) {
+          const remTime = new Date(targetVal);
           if (now >= remTime) {
             t.reminded = true;
             playChime();
             if ("Notification" in window && Notification.permission === "granted") {
-              new Notification("Eisenhower Reminder: " + t.quadrant.toUpperCase(), {
+              new Notification("Eisenhower Target Due: " + t.quadrant.toUpperCase(), {
                 body: t.text,
                 icon: "https://cdn-icons-png.flaticon.com/512/906/906334.png"
               });
-            } else {
-              alert(`⏰ Reminder [${t.quadrant.toUpperCase()}]:\n${t.text}`);
             }
             saveLocal();
+            renderMatrix();
           }
         }
       });
+      // Check auto-rotation hourly
+      if (now.getMinutes() === 0) {
+        autoRotateTasks();
+      }
     }, 30000);
 
     window.addEventListener('DOMContentLoaded', () => {
